@@ -1,11 +1,13 @@
-# Ubuntu / Debian
+# Linux
 
 * [System](system.md)
 * [Apache](apache.md)
 * [MySql](mysql.md)
+* [Security](security.md)
 
-# Ubuntu / Linux Mint
+# Debian based (Ubuntu, Linux Mint...)
 
+* [Desktop tips](desktop.md)
 * [Cinnamon](cinnamon.md)
 * [Unity](unity.md)
 * [Linux Mint Guide](https://mintguide.org/)
