@@ -10,8 +10,10 @@
 * [Desktop tips](desktop.md)
 * [Cinnamon](cinnamon.md)
 * [Unity](unity.md)
-* [Linux Mint Guide](https://mintguide.org/)
+
 
 # Good links
 
-[Use the Unofficial Bash Strict Mode](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
+* [Linux Mint Guide](https://mintguide.org/)
+* [Use the Unofficial Bash Strict Mode](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
+* [A surprisingly arcane little Unix shell pipeline example](https://utcc.utoronto.ca/~cks/space/blog/unix/ShellPipelineIndeterminate)
