@@ -12,10 +12,26 @@
         -o IdentityFile=identity.key \
         user@host
 
-### Links
+### authorized_keys or authorized_keys2
+
+**Answer**: use `authorized_keys`.
 
 [What's the difference between "authorized_keys" and "authorized_keys2"?]
 (https://serverfault.com/questions/116177/whats-the-difference-between-authorized-keys-and-authorized-keys2)
+
+## User
+
+### Create a user
+
+    useradd --base-dir /home --shell=/bin/bash --create-home user_name
+
+### Add a user to a group
+
+    usermod -a -G group_name user_name
+
+### List all groups which a user belongs to
+
+    groups user_name
 
 ## Host
 
