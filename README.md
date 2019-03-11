@@ -1,5 +1,6 @@
 # Linux
 
+* [Bash](bash.md)
 * [System](system.md)
 * [Apache](apache.md)
 * [MySql](mysql.md)
