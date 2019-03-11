@@ -12,6 +12,11 @@
         -o IdentityFile=identity.key \
         user@host
 
+### Links
+
+[What's the difference between "authorized_keys" and "authorized_keys2"?]
+(https://serverfault.com/questions/116177/whats-the-difference-between-authorized-keys-and-authorized-keys2)
+
 ## Host
 
 ### Print detailed information about the machine
