@@ -14,6 +14,10 @@
 * [Cinnamon](cinnamon.md)
 * [Unity](unity.md)
 
+# Services
+
+* [Dynamic DNS](ddns.md)
+
 # Good links
 
 * [Linux Mint Guide](https://mintguide.org/)
