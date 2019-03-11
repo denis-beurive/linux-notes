@@ -3,6 +3,8 @@
 * [System](system.md)
 * [Apache](apache.md)
 * [MySql](mysql.md)
+* [Ssh](ssh.md)
+* [Ftp](ftp.md)
 * [Security](security.md)
 
 # Debian based (Ubuntu, Linux Mint...)
@@ -10,7 +12,6 @@
 * [Desktop tips](desktop.md)
 * [Cinnamon](cinnamon.md)
 * [Unity](unity.md)
-
 
 # Good links
 
