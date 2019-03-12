@@ -73,7 +73,7 @@ Exit immediately if a pipeline, which may consist of a single simple command, a 
 
 Treat unset variables and parameters other than the special parameters `@` or `*` as an error when performing parameter expansion. An error message will be written to the standard error, and a non-interactive shell will exit.
 
-    set -p
+    set -u
 
 > See [The Set Builtin](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#The-Set-Builtin)
 
