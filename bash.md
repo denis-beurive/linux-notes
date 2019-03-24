@@ -61,6 +61,17 @@ Result:
     In the function: mylocal = 10
     Outside the function: mylocal = 10
 
+## Local and readonly
+
+Use `local -r`. For example:
+
+    #!/bin/bash
+
+    function my_function {
+        local -r variable
+
+    }
+
 ## Immediately exit if any command has a non-zero exit status
 
 Exit immediately if a pipeline, which may consist of a single simple command, a list, or a compound command returns a non-zero status. 
