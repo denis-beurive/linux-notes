@@ -46,3 +46,24 @@ Decrypt:
 
     openssl enc -d -aes-256-cbc -in /path/to/the/encrypted/file -out /path/to/the/decryted/file
 
+
+## Antivirus
+
+Clam AV: [https://www.makeuseof.com/tag/command-line-clam-antivirus-linux/](https://www.makeuseof.com/tag/command-line-clam-antivirus-linux/)
+
+    sudo apt-get install clamav clamav-freshclam
+
+Refresh the database of viruses signatures:
+
+    sudo freshclam
+
+Scan a directory recursively:
+
+    sudo clamscan -r /home/
+    
+or:
+
+    sudo clamscan -ri /home/
+
+> The option "i" tells Clam to print the paths of infected files only.
+
