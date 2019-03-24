@@ -72,6 +72,16 @@ Use `local -r`. For example:
 
     }
 
+## Return from a function
+
+    return [-n]
+
+## Find and replace
+
+Example:
+
+    echo "toto.git" | sed -e 's/.git$//'
+
 ## Immediately exit if any command has a non-zero exit status
 
 Exit immediately if a pipeline, which may consist of a single simple command, a list, or a compound command returns a non-zero status. 
