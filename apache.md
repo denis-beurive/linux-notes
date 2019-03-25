@@ -1,5 +1,32 @@
 # Apache 2.4
 
+## Make sure that Apache is running
+
+Let's say that Apache listens to the port 80:
+
+    # netstat -an | grep :80
+    tcp6       0      0 :::80                   :::*                    LISTEN   
+
+Make sure that the process is running:
+
+    # ps awx | grep apache2
+    18734 ?        Ss     0:00 /usr/sbin/apache2 -k start
+    18735 ?        S      0:00 /usr/sbin/apache2 -k start
+    18736 ?        S      0:00 /usr/sbin/apache2 -k start
+    18737 ?        S      0:00 /usr/sbin/apache2 -k start
+    18738 ?        S      0:00 /usr/sbin/apache2 -k start
+    18739 ?        S      0:00 /usr/sbin/apache2 -k start
+
+Try to get a document:
+
+    cd /tmp/ && wget http://localhost:80
+
+## LOG files
+
+* `/var/log/apache2/access.log`
+* `/var/log/apache2/error.log`
+* `/var/log/apache2/other_vhosts_access.log`
+
 ## Test the configuration
 
     /usr/sbin/apachectl configtest
@@ -53,7 +80,14 @@ or:
 
     egrep "export\s+(APACHE_RUN_USER|APACHE_RUN_GROUP)=" /etc/apache2/envvars
 
-## Typical configuration file
+## Activate a virtual host configuration for a PHP application
+
+The configuration file (`example.com.conf`, in this example) must be located in the directory "`/etc/apache2/sites-available`".
+
+    sudo a2ensite example.com.conf
+    sudo systemctl reload apache2
+
+## Typical virtual host configuration file
 
 File `/etc/apache2/sites-available/your_domainFile.conf`:
 
