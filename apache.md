@@ -27,6 +27,8 @@ Try to get a document:
 * `/var/log/apache2/error.log`
 * `/var/log/apache2/other_vhosts_access.log`
 
+    sudo tail -f /var/log/apache2/access.log /var/log/apache2/error.log /var/log/apache2/other_vhosts_access.log
+
 ## Test the configuration
 
     /usr/sbin/apachectl configtest
@@ -60,6 +62,10 @@ If an error occurs, you can get information with the commands below:
     systemctl status apache2.service
     journalctl -xe
 
+And:
+
+    sudo tail -f /var/log/apache2/access.log /var/log/apache2/error.log /var/log/apache2/other_vhosts_access.log
+
 ## List available modules
 
     ls /etc/apache2/mods-available/*.load
@@ -80,14 +86,21 @@ or:
 
     egrep "export\s+(APACHE_RUN_USER|APACHE_RUN_GROUP)=" /etc/apache2/envvars
 
-## Activate a virtual host configuration for a PHP application
+## Activate a virtual host configuration
 
 The configuration file (`example.com.conf`, in this example) must be located in the directory "`/etc/apache2/sites-available`".
 
     sudo a2ensite example.com.conf
-    sudo systemctl reload apache2
 
-## Typical virtual host configuration file
+> Eventually: `sudo systemctl reload apache2`
+
+## Disable a virtual host configuration
+
+    sudo a2dissite example.com.conf
+
+> Eventually: `sudo systemctl reload apache2`
+
+## Typical virtual host configuration file for a PHP application
 
 File `/etc/apache2/sites-available/your_domainFile.conf`:
 
