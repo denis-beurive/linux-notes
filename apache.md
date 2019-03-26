@@ -133,3 +133,20 @@ Make sure that `mod-rewrite` is activated:
 
     ls -l /etc/apache2/mods-enabled/rewrite*
 
+## Typical virtual host configuration file for a Python application
+
+This example works with "`mod_wsgi`".
+
+    <VirtualHost *:80>
+        ServerName example.net
+        ServerAlias www.example.net
+
+        WSGIDaemonProcess thermo user=thermo group=thermo threads=5
+        WSGIScriptAlias / /home/thermo/projects/thermo_test/www/www.wsgi
+
+        <Directory /home/thermo/projects/thermo_test/www>
+            WSGIProcessGroup thermo
+            WSGIApplicationGroup %{GLOBAL}
+            Require all granted
+        </Directory>
+    </VirtualHost>
