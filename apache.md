@@ -35,6 +35,8 @@ Then look at the LOG files:
 * `/var/log/apache2/error.log`
 * `/var/log/apache2/other_vhosts_access.log`
 
+To scan all LOG files at once:
+
     sudo tail -f /var/log/apache2/access.log /var/log/apache2/error.log /var/log/apache2/other_vhosts_access.log
 
 If an error occurs, you can get information with the commands below:
