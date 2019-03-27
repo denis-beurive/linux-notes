@@ -2,12 +2,17 @@
 
 ## Make sure that Apache is running
 
-Let's say that Apache listens to the port 80:
+Let's say that Apache listens to the port 80 (HTTP) and/or 443 (HTTPS):
 
-    # netstat -an | grep :80
-    tcp6       0      0 :::80                   :::*                    LISTEN   
+    # sudo netstat -tulpn | grep LISTEN | egrep ':(80|443)\s+'
+    tcp6       0      0 :::80                   :::*                    LISTEN      4422/apache2        
 
-Make sure that the process is running:
+Apache may not be listening on the expected ports. Let's try this:
+
+    # sudo netstat -tulpn | grep LISTEN | egrep "apache2?"
+    tcp6       0      0 :::80                   :::*                    LISTEN      4422/apache2  
+
+If peering through the interfaces does not reveal any activities, let's try this:
 
     # ps awx | grep apache2
     18734 ?        Ss     0:00 /usr/sbin/apache2 -k start
@@ -21,13 +26,21 @@ Try to get a document:
 
     cd /tmp/ && wget http://localhost:80
 
-## LOG files
+## LOG files / Troubleshooting
+
+First, make sure that Apache is running and is listening on the expected ports.
+Then look at the LOG files:
 
 * `/var/log/apache2/access.log`
 * `/var/log/apache2/error.log`
 * `/var/log/apache2/other_vhosts_access.log`
 
     sudo tail -f /var/log/apache2/access.log /var/log/apache2/error.log /var/log/apache2/other_vhosts_access.log
+
+If an error occurs, you can get information with the commands below:
+
+    systemctl status apache2.service
+    journalctl -xe
 
 ## Test the configuration
 
@@ -37,34 +50,23 @@ Try to get a document:
 
     /usr/sbin/apachectl -S
 
+## Start the server
+
+    /usr/sbin/apachectl -S && /usr/sbin/apachectl configtest && service apache2 start && echo "OK"    
+
+## Stop the server
+
+    service apache2 stop && echo "OK"
+
 ## Reload the configuration
 
     /usr/sbin/apachectl -S && /usr/sbin/apachectl configtest && service apache2 reload && echo "OK"
 
+> Sometimes it seems that reloading the configuration does not actually reload _all_ the configuration. I've had trouble with "mod_wsgi". If the expected result is not what you expected (you think that the configuration has not been reloaded), then try to restart the server.
+
 ## Restart the server
 
     /usr/sbin/apachectl -S && /usr/sbin/apachectl configtest && service apache2 restart && echo "OK"
-
- ## Make sure that Apache is running and listening
-
-    netstat -tulpn | grep LISTEN | egrep ':(80|443)\s+'
-    ps awx | grep apache2
-    cd /tmp/ && wget http://localhost:80
-
-LOG files:
-
-* `/var/log/apache2/access.log`
-* `/var/log/apache2/error.log`
-* `/var/log/apache2/other_vhosts_access.log`
-
-If an error occurs, you can get information with the commands below:
-
-    systemctl status apache2.service
-    journalctl -xe
-
-And:
-
-    sudo tail -f /var/log/apache2/access.log /var/log/apache2/error.log /var/log/apache2/other_vhosts_access.log
 
 ## List available modules
 
@@ -150,3 +152,6 @@ This example works with "`mod_wsgi`".
             Require all granted
         </Directory>
     </VirtualHost>
+
+> Note : when using "`mod_wsgi`", reloading the server configuration may not be enough for a modification to take effect. If you notice that the expected configuration does not take effect, then restart Apache.
+
