@@ -157,3 +157,102 @@ This example works with "`mod_wsgi`".
 
 > Note : when using "`mod_wsgi`", reloading the server configuration may not be enough for a modification to take effect. If you notice that the expected configuration does not take effect, then restart Apache.
 
+## Install certificate with "Let's encrypt"
+
+Make sure that the SSL module is enabled:
+
+    # ls -l /etc/apache2/mods-enabled/ | grep ssl
+    lrwxrwxrwx 1 root root 26 Mar 28 14:50 ssl.conf -> ../mods-available/ssl.conf
+    lrwxrwxrwx 1 root root 26 Mar 28 14:50 ssl.load -> ../mods-available/ssl.load
+
+> If necessary, enable the SSL module: `a2enmod SSL`.
+
+Add backports to your sources.list:
+
+    deb http://deb.debian.org/debian stretch-backports main
+
+Read [this document](https://backports.debian.org/Instructions/)
+
+Then install CertBot:
+
+    apt-get install certbot python-certbot-apache -t stretch-backports
+
+> Before you generate the certificate, you should know that some verification is performed based on the domain name. The domain names that are being "certificated" must be declared in the DNS. If, for example, you declare aliases in a virtual host (ex: `ServerAlias www.your_domain.fr`), then **these aliases must be declared in the DNS**.
+
+At last, generate certificates and configure Apache:
+
+    certbot --apache
+
+> The certificates will be stored in the directory `/etc/letsencrypt/live/`.
+
+Please read the file `/etc/letsencrypt/live/README`, as it tells you where to find the various files that you will need to configure your virtual hosts:
+
+    `/etc/letsencrypt/live/[cert name]/privkey.pem`  : the private key for your certificate.
+    `/etc/letsencrypt/live/[cert name]/fullchain.pem`: the certificate file used in most server software.
+    `/etc/letsencrypt/live/[cert name]/chain.pem`    : used for OCSP stapling in Nginx >=1.3.7.
+    `/etc/letsencrypt/live/[cert name]/cert.pem`     : will break many server configurations, and should not be used without reading further documentation (see link below).
+
+Make sure that Apache is configured so that:
+
+    * Apache listens for incoming HTTP requests on port `80`.
+    * Apache listens for incoming HTTPS requests on port `443`.
+
+To do that, edit the file `/etc/apache2/ports.conf`. You should have:
+
+    # cat /etc/apache2/ports.conf 
+    # If you just change the port or add more ports here, you will likely also
+    # have to change the VirtualHost statement in
+    # /etc/apache2/sites-enabled/000-default.conf
+
+    Listen 80
+
+    <IfModule ssl_module>
+        Listen 443
+    </IfModule>
+
+    <IfModule mod_gnutls.c>
+        Listen 443
+    </IfModule>
+
+If necessary, you may need to adapt your virtual hosts:
+
+Without SSL:
+
+    <VirtualHost *:80>
+        ...
+    </VirtualHost>
+
+With SSL:
+
+    <VirtualHost *:80 *:443>
+        SSLEngine on
+        SSLCertificateFile /etc/letsencrypt/live/your_domain.net/fullchain.pem
+        SSLCertificateKeyFile /etc/letsencrypt/live/your_domain.net/privkey.pem
+
+        ...
+    </VirtualHost>
+
+Check the Apache configuration:
+
+    /usr/sbin/apachectl -S && /usr/sbin/apachectl configtest && echo "OK"
+
+**Note**: make sure that you see a line that starts with "`*:443`":
+
+    root@vps645190:/etc/apache2/sites-available#  /usr/sbin/apachectl -S && /usr/sbin/apachectl configtest && echo "OK"
+    VirtualHost configuration:
+    *:443                  your_domain.net (/etc/apache2/sites-enabled/www.conf:1)
+    *:80                   your_domain.net (/etc/apache2/sites-enabled/www.conf:1)
+
+Restart Apache:
+
+    service apache2 restart && echo "OK"
+
+Make sure that Aapche listens on the port 443:
+
+    netstat -tulpn | grep LISTEN | grep 443
+
+Make sure that you can perform HTTP and HTTPS requests:
+
+    wget http://your_domain.net
+    wget https://your_domain.net
+
