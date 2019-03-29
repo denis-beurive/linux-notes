@@ -107,11 +107,11 @@ Start `screen` with this configuration file:
 
     screen -c screen.rc
 
-# Links
+## Links
 
 [GNU Screen](https://wiki.archlinux.org/index.php/GNU_Screen#Use_256_colors)
 
-# Troubleshooting
+## Troubleshooting
 
 ## Cannot open your terminal '/dev/pts/0' - please check
 
