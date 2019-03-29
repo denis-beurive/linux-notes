@@ -2,7 +2,20 @@
 
 ## Path to the current script
 
+    #!/usr/bin/env bash
 
+    SOURCE="${BASH_SOURCE[0]}"
+    while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
+    readonly __DIR__="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+## Create a file "in memory"
+
+    echo "toto" > /dev/shm/your_file
+
+This file is created in a shared memory (shm) area.
+Thus, it can be accessed by any process.
+
+> To delete this file, just use `rm`: `rm /dev/shm/your_file`.
 
 ## Heredoc with substitutions
 
