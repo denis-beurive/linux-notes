@@ -1,5 +1,9 @@
 # Bash
 
+## Path to the current script
+
+
+
 ## Heredoc with substitutions
 
     #!/bin/bash
