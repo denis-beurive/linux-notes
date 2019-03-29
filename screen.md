@@ -26,6 +26,7 @@ A _window_:
 * `[Crt] [A] [C]`: create a new window.
 * `[Crt] [A] ["]`: list all windows.
 * `[Crt] [A] [Maj] [A]`: set the title.
+* `[Crt] [A] [K]`: destroy (kill) the current window.
 
 ## Moving around
 
