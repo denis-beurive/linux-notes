@@ -14,13 +14,12 @@ A _window_:
 
 ## Regions management
 
-`[Crt] [A] [Maj] [S]`: split a region horizontally.
-`[Crt] [A] [|]`: split a region vertically.
-`[Crt] [A] [Tab]`: go the the next region.
-`[Crt] [A] :remove` or `[Crt] [A] [Maj] [X]`: remove the current region.
-`[Crt] [A] :resize`: resize the current region.
-`[Crt] [A] :fit` or `[Crt] [A] [Maj] [F]`: if you resize the terminal, then you may need to refresh the "drawing" of the regions.
-
+* `[Crt] [A] [Maj] [S]`: split a region horizontally.
+* `[Crt] [A] [|]`: split a region vertically.
+* `[Crt] [A] [Tab]`: go the the next region.
+* `[Crt] [A] :remove` or `[Crt] [A] [Maj] [X]`: remove the current region.
+* `[Crt] [A] :resize`: resize the current region.
+* `[Crt] [A] :fit` or `[Crt] [A] [Maj] [F]`: if you resize the terminal, then you may need to refresh the "drawing" of the regions.
 
 ## Windows management
 
