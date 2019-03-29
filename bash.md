@@ -68,9 +68,10 @@ Use `local -r`. For example:
     #!/bin/bash
 
     function my_function {
-        local -r variable
-
+        local -r variable=10
+        echo ${variable}
     }
+    my_function
 
 ## Return from a function
 
