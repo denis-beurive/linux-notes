@@ -1,0 +1,91 @@
+altscreen on
+
+# Create 4 windows
+
+# Window 1
+#   Move to the directory "/var/log/apache2".
+#   Then create a new window. Assign it the index 1.
+#   Execute the command "tail -f /var/log/apache2/access.log" within this window.
+
+chdir "/var/log/apache2"
+screen -t "access" 1 tail -f /var/log/apache2/access.log
+
+# Window 2
+#   Move to the directory "/var/log/apache2".
+#   Then create a new window. Assign it the index 2.
+#   Execute the command "tail -f /var/log/apache2/error.log" within this window.
+
+chdir "/var/log/apache2"
+screen -t "error" 2 tail -f /var/log/apache2/error.log
+
+# Window 3
+#   Move to the directory "/var/log/apache2".
+#   Then create a new window. Assign it the index 3.
+#   Execute the command "tail -f /var/log/apache2/other_vhosts_access.log" within this window.
+
+chdir "/var/log/apache2"
+screen -t "other_vhosts_access" 3 tail -f /var/log/apache2/other_vhosts_access.log
+
+# Window 4
+#   Move to /tmp.
+#   Then create a new window. Assign it the index 4.
+
+chdir "/tmp"
+screen -t "commands" 4
+
+# Create 4 regions.
+#
+# 1. The terminal contains only one region (that occupies all the available area).
+#    This region is, de facto, the current region.
+#
+# 2. The first "split command" vertically splits the current region into 2 regions.
+#    The terminal now contains 2 regions.
+#    And the current region is the upper one (thus, the first from the top).
+#
+# 3. The second "split command" vertically splits the current region into 2 regions.
+#    The terminal now contains 3 regions.
+#    And the current region is the second from the top.
+#
+# 4. The third "split command" vertically splits the current region into 2 regions.
+#    The terminal now contains 4 regions.
+#    And the current region is the third from the top.
+#
+# That is:
+#
+#    -------------------------------------
+#    First region
+#    -------------------------------------
+#    Second region
+#    -------------------------------------
+#    Third region
+#    -------------------------------------
+#    Fourth region
+#    -------------------------------------
+#
+# At this point, the *current* (the one that gets the focus) region is the third one.
+
+split
+split
+split
+
+# Move the focus upward 2 times.
+# This makes the top region (the first one) the current region.
+# In the current region (the first one), show the first window.
+focus up
+focus up
+select 1
+
+# Move to the next region (the second one). And, in this region, show the second windows.
+focus
+select 2
+
+# Move to the next region (the third one). And, in this region, show the third windows.
+focus
+select 3
+
+# Move to the next region (the fourth one). And, in this region, show the fourth windows.
+focus
+select 4
+
+# At this point, the current region (the one that gets the focus) the the fourth one.
+
