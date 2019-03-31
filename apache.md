@@ -39,94 +39,14 @@ To scan all LOG files at once:
 
     sudo tail -f /var/log/apache2/access.log /var/log/apache2/error.log /var/log/apache2/other_vhosts_access.log
 
-Please note that you can also use `screen`... if you are a geek. The text below represents the content of the `screen` configuration file (let's name it `screen.rc`). To run a screen, use this command: `screen -c screen.rc`
+Please note that you can also use `screen`. [This configuration](code/screen-1.rc) (let's name it `screen.rc`) creates 4 regions vertically stacked on top of each others.
 
-    altscreen on
+* the first region display the content of the file `/var/log/apache2/access.log`.
+* the second region display the content of the file `/var/log/apache2/error.log`.
+* the third region display the content of the file `/var/log/apache2/other_vhosts_access.log`.
+* the last region will receive the focus.
 
-    # Create 3 windows
-
-    # Move to the directory "/var/log/apache2".
-    # Then create a new window. Assign it the index 1.
-    # Execute the command "tail -f /var/log/apache2/access.log" within this window.
-
-    chdir "/var/log/apache2"
-    screen -t "access" 1 tail -f /var/log/apache2/access.log
-
-    # Move to the directory "/var/log/apache2".
-    # Then create a new window. Assign it the index 2.
-    # Execute the command "tail -f /var/log/apache2/error.log" within this window.
-
-    chdir "/var/log/apache2"
-    screen -t "error" 2 tail -f /var/log/apache2/error.log
-
-    # Move to the directory "/var/log/apache2".
-    # Then create a new window. Assign it the index 3.
-    # Execute the command "tail -f /var/log/apache2/other_vhosts_access.log" within this window.
-
-    chdir "/var/log/apache2"
-    screen -t "other_vhosts_access" 3 tail -f /var/log/apache2/other_vhosts_access.log
-
-    # Move to /tmp.
-    # Then create a new window. Assign it the index 4.
-
-    chdir "/tmp"
-    screen -t "commands" 4
-
-    # Create 3 regions.
-    #
-    # 1. The terminal contains only one region (that occupies all the available area).
-    #    This region is, de facto, the current region.
-    #
-    # 2. The first "split command" vertically splits the current region into 2 regions.
-    #    The terminal now contains 2 regions.
-    #    And the current region is the upper one (thus, the first from the top).
-    #
-    # 3. The second "split command" vertically splits the current region into 2 regions.
-    #    The terminal now contains 3 regions.
-    #    And the current region is the second from the top.
-    #
-    # 4. The third "split command" vertically splits the current region into 2 regions.
-    #    The terminal now contains 4 regions.
-    #    And the current region is the third from the top.
-    #
-    # That is:
-    #
-    #    -------------------------------------
-    #    First region
-    #    -------------------------------------
-    #    Second region
-    #    -------------------------------------
-    #    Third region
-    #    -------------------------------------
-    #    Fourth region
-    #    -------------------------------------
-    #
-    # At the end, the current region is the third one.
-
-    split
-    split
-    split
-
-    # Move the focus upward 2 times.
-    # This makes the top region (the first one) the current region.
-    # In the current region (the first one), show the first window.
-    focus up
-    focus up
-    select 1
-
-    # Move to the next region. And, in this region, show the second windows.
-    focus
-    select 2
-
-    # Move to the next region. And, in this region, show the third windows.
-    focus
-    select 3
-
-    # Move to the next region. And, in this region, show the fourth windows.
-    focus
-    select 4
-
-    # At this point, the current region (the one that gets the focus) the the fourth one.
+To run a screen, use this command: `screen -c screen.rc`
 
 If an error occurs, you can get information with the commands below:
 
@@ -234,7 +154,7 @@ This example works with "`mod_wsgi`".
         ServerName example.net
         ServerAlias www.example.net
 
-        WSGIDaemonProcess thermo user=thermo group=thermo threads=5
+        WSGIDaemonProcess thermo user=thermo group=thermo threads=5 home=/home/thermo
         WSGIScriptAlias / /home/thermo/projects/thermo_test/www/www.wsgi
 
         <Directory /home/thermo/projects/thermo_test/www>
@@ -243,6 +163,10 @@ This example works with "`mod_wsgi`".
             Require all granted
         </Directory>
     </VirtualHost>
+
+> Please note the parameters passed to the directive `WSGIDaemonProcess`.
+>
+> Any paths (to files) defined within the Python WSGI handler will be relative to the value of `home`. That is, in this example, `/my_file` (within the Python WSGI handler) will points to `/home/thermo/my_file`.
 
 > Note : when using "`mod_wsgi`", reloading the server configuration may not be enough for a modification to take effect. If you notice that the expected configuration does not take effect, then restart Apache.
 
