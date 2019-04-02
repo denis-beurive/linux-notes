@@ -17,6 +17,42 @@ Thus, it can be accessed by any process.
 
 > To delete this file, just use `rm`: `rm /dev/shm/your_file`.
 
+## Default value
+
+### If variable is not set or its value is an empty string
+
+If the variable `$variable` is set, and if its value is not an empty string, then its value is used. Otherwise, the default value ("`default value`" or "`default_value`") is used.
+
+    echo "1> ${variable:-default_value}"
+    echo "2> ${variable:-default value}"
+    variable=""
+    echo "3> ${variable:-"default value"}"
+    variable="the value"
+    echo "4> ${variable:-default value}"
+
+Result:
+
+    1> default_value
+    2> default value
+    3> default value
+    4> the value
+
+### If variable is set and its value is not an empty string
+
+If variable is set and its value is not an empty string, then the default value is used. Otherwise, the value used is an empty string.
+
+    echo "1> ${variable:+default_value}"
+    variable=''
+    echo "2> ${variable:+default_value}"
+    variable='the value'
+    echo "3> ${variable:+default_value}"
+
+Result:
+
+    1> 
+    2> 
+    3> default_value
+
 ## Heredoc with substitutions
 
     #!/bin/bash
