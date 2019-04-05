@@ -17,6 +17,13 @@ Thus, it can be accessed by any process.
 
 > To delete this file, just use `rm`: `rm /dev/shm/your_file`.
 
+## Get a subtring
+
+    s="abcdefghi"
+    a=${s:0:3}
+    echo "$a"
+    abc
+
 ## Default value
 
 ### If variable is not set or its value is an empty string
