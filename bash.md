@@ -17,6 +17,23 @@ Thus, it can be accessed by any process.
 
 > To delete this file, just use `rm`: `rm /dev/shm/your_file`.
 
+## Test if an entity is defined
+
+An entity may be a variable or a function.
+
+    type entity &>/dev/null
+    if [ $? -eq 1 ]; then
+        echo "entity is NOT defined!"
+    fi
+
+## The "noop" command
+
+    function dummy_function() {
+        :
+    }
+
+A dummy function (that does nothing) may be useful if you want to test if a given script has been sourced or not: you just check whether the dummy function is defined or not.
+
 ## Get a subtring
 
     s="abcdefghi"
