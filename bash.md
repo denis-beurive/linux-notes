@@ -17,13 +17,17 @@ Thus, it can be accessed by any process.
 
 > To delete this file, just use `rm`: `rm /dev/shm/your_file`.
 
-## Test if an entity is defined
+## Test if a function is defined
 
-An entity may be a variable or a function.
-
-    type entity &>/dev/null
+    type function_name &>/dev/null
     if [ $? -eq 1 ]; then
-        echo "entity is NOT defined!"
+        echo "function_name is NOT defined!"
+    fi
+
+## Test if a variable is defined
+
+    if [ -z ${VARNAME+x} ]; then
+        echo "Variable VARNAME is NOT defined!";
     fi
 
 ## The "noop" command
