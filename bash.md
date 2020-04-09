@@ -206,4 +206,7 @@ See [Use the Unofficial Bash Strict Mode](http://redsymbol.net/articles/unoffici
     #              exit successfully.
     set -eu -o pipefail
 
+## Add a directory to PATH only if it is not already declared
 
+    GRADLE_PATH="${HOME}/Softwares/gradle-6.3/bin"
+    [[ ":${PATH}:" != *":${GRADLE_PATH}:"* ]] && PATH="${GRADLE_PATH}:${PATH}"
