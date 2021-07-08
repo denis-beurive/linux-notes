@@ -115,7 +115,26 @@ Start `screen` with this configuration file:
 
     screen -c screen.rc
 
-Or, [this script](code/screen-1.sh) may be interesting. The screen configuration file is embedded within a bash script.
+### Embed the configuration file into a BASH startup script
+
+[this script](code/screen-1.sh) may be interesting. The screen configuration file is embedded within a bash script.
+
+### Execute arbitrary commands at windows creations
+
+If you want to execute arbitrary commands at windows creations, use `stuff`. For example:
+
+    altscreen on
+
+    screen -t "issue135-review" 0
+    stuff ". venv/bin/activate; clear\n"
+
+    chdir "tests"
+    screen -t "issue135-review tests" 1
+    stuff ". ../venv/bin/activate; clear\n"
+
+    chdir "../tmp/log"
+    screen -t "issue135-review log" 2
+    stuff ". ../../venv/bin/activate; clear\n"
 
 ### Slightly advanced configuration
 
