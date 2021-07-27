@@ -11,6 +11,7 @@
 * [Security](security.md)
 * [TCP dump](tcpdump.md)
 * [Text manipulation](text-manip.md)
+* [Find tips](find.md)
 
 # Debian based (Ubuntu, Linux Mint...)
 
