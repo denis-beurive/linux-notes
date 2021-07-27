@@ -10,6 +10,7 @@
 * [Screen](screen.md)
 * [Security](security.md)
 * [TCP dump](tcpdump.md)
+* [Text manipulation](text-manip.md)
 
 # Debian based (Ubuntu, Linux Mint...)
 
