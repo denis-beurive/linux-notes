@@ -12,6 +12,7 @@
 * [TCP dump](tcpdump.md)
 * [Text manipulation](text-manip.md)
 * [Find tips](find.md)
+* [JQ tips](jq.md)
 
 # Debian based (Ubuntu, Linux Mint...)
 
