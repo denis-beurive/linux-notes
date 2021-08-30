@@ -322,3 +322,102 @@ python code/generate_data.py | jq
   ]
 }
 ```
+
+Select records that contains a given field (here `.details.c`):
+
+```bash
+python3 code/generate_data.py |
+jq 'if .details.c
+    then
+        .
+    else
+        empty
+    end'
+
+# or, just:
+
+python3 code/generate_data.py | jq 'select (.details.c)'
+```
+
+Select records that contains two given fields (here `.details.c` and `.details.b.Evelyn`):
+
+```bash
+python3 code/generate_data.py |
+jq 'if .details.c and .details.b.Evelyn
+    then
+        .
+    else
+        empty
+    end'
+
+# or, just:
+
+python3 code/generate_data.py | jq 'select (.details.c) | select (.details.b.Evelyn)' 
+```
+
+Select records that contain at least one of two given fields (here `.details.c` or `.results.Isabella`):
+
+```bash
+python3 code/generate_data.py |
+jq 'if .details.c or .results.Isabella
+    then
+        .
+    else
+        empty
+    end'
+
+# or, just:
+
+python3 code/generate_data.py | jq 'select (.details.c) | select (.results.Isabella)' 
+```
+
+Using variables in JQ expressions:
+
+```bash
+python3 code/generate_data.py |
+jq '.details as $d |
+    if .results.Isabella
+    then
+        $d
+    else
+        empty
+    end'
+```
+
+We can include tests within tests:
+
+```bash
+python3 code/generate_data.py |
+jq '.details as $d |
+    if .results.Isabella
+    then
+        if .details.c
+        then
+            $d
+        else
+            empty
+        end
+    else
+        empty
+    end'
+
+# or, just:
+
+python3 code/generate_data.py | jq 'select(.results.Isabella) | select(.details.c) | .details'
+```
+
+> Please note that this expression can be simplified: python3 code/generate_data.py | jq 'select(.results.Isabella) | .details.c | .details'
+
+Select records based on the presence of a given item in a given array. Here we select records which array `select(.details.a` contains the value `17`.
+
+
+```bash
+python3 code/generate_data.py | jq 'select(.details.a | index(17)) | .'
+
+# or, just for fun:
+
+python3 code/generate_data.py | jq '. as $v | select(.details.a | index(17)) | $v'
+
+```
+
+
