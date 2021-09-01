@@ -420,4 +420,9 @@ python3 code/generate_data.py | jq '. as $v | select(.details.a | index(17)) | $
 
 ```
 
+Select the "first level" keys:
+
+```bash
+python3 code/generate_data.py | jq 'keys'
+```
 
