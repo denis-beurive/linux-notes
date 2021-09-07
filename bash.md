@@ -2,11 +2,13 @@
 
 ## Path to the current script
 
-    #!/usr/bin/env bash
+```bash
+#!/usr/bin/env bash
 
-    SOURCE="${BASH_SOURCE[0]}"
-    while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
-    readonly __DIR__="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
+readonly __DIR__="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+```
 
 ## Create a file "in memory"
 
@@ -19,31 +21,39 @@ Thus, it can be accessed by any process.
 
 ## Test if a function is defined
 
-    type function_name &>/dev/null
-    if [ $? -eq 1 ]; then
-        echo "function_name is NOT defined!"
-    fi
+```bash
+type function_name &>/dev/null
+if [ $? -eq 1 ]; then
+    echo "function_name is NOT defined!"
+fi
+```
 
 ## Test if a variable is defined
 
-    if [ -z ${VARNAME+x} ]; then
-        echo "Variable VARNAME is NOT defined!";
-    fi
+```bash
+if [ -z ${VARNAME+x} ]; then
+    echo "Variable VARNAME is NOT defined!";
+fi
+```
 
 ## The "noop" command
 
-    function dummy_function() {
-        :
-    }
+```bash
+function dummy_function() {
+    :
+}
+```
 
 A dummy function (that does nothing) may be useful if you want to test if a given script has been sourced or not: you just check whether the dummy function is defined or not.
 
 ## Get a subtring
 
-    s="abcdefghi"
-    a=${s:0:3}
-    echo "$a"
-    abc
+```bash
+s="abcdefghi"
+a=${s:0:3}
+echo "$a"
+abc
+```
 
 ## Default value
 
@@ -83,20 +93,22 @@ Result:
 
 ## Heredoc with substitutions
 
-    #!/bin/bash
+```bash
+#!/bin/bash
 
-    readonly V1=10
-    readonly V2=20
+readonly V1=10
+readonly V2=20
 
-    string=$(cat <<"EOS"
-    V1="${V1}"
-    V2="${V2}"
-    V3=\"\${V3}\"
-    EOS
-    )
+string=$(cat <<"EOS"
+V1="${V1}"
+V2="${V2}"
+V3=\"\${V3}\"
+EOS
+)
 
-    eval "s=\"${string}\""
-    echo "${s}"
+eval "s=\"${string}\""
+echo "${s}"
+```
 
 Result:
 
@@ -108,16 +120,18 @@ Result:
 
 Use the keyword "`local`":
 
-    #!/bin/bash
+```bash
+#!/bin/bash
 
-    function func {
-        local mylocal=10
-        echo "In the function: mylocal = ${mylocal}"
-    }
+function func {
+    local mylocal=10
+    echo "In the function: mylocal = ${mylocal}"
+}
 
-    func
+func
 
-    echo "Outside the function: mylocal = ${mylocal}"
+echo "Outside the function: mylocal = ${mylocal}"
+```
 
 Result:
 
@@ -126,16 +140,18 @@ Result:
 
 If you remove the keyword "`local`", then the variable `mylocal` is not local to the function anymore. Let's make the test:
 
-    #!/bin/bash
+```bash
+#!/bin/bash
 
-    function func {
-        mylocal=10 ### No "local" here !!!
-        echo "In the function: mylocal = ${mylocal}"
-    }
+function func {
+    mylocal=10 ### No "local" here !!!
+    echo "In the function: mylocal = ${mylocal}"
+}
 
-    func
+func
 
-    echo "Outside the function: mylocal = ${mylocal}"
+echo "Outside the function: mylocal = ${mylocal}"
+```
 
 Result:
 
@@ -146,13 +162,15 @@ Result:
 
 Use `local -r`. For example:
 
-    #!/bin/bash
+```bash
+#!/bin/bash
 
-    function my_function {
-        local -r variable=10
-        echo ${variable}
-    }
-    my_function
+function my_function {
+    local -r variable=10
+    echo ${variable}
+}
+my_function
+```
 
 ## Return from a function
 
@@ -192,21 +210,87 @@ If set, the return value of a pipeline is the value of the last (rightmost) comm
 
 See [Use the Unofficial Bash Strict Mode](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
 
-    # Turn on "strict mode".
-    # - See http://redsymbol.net/articles/unofficial-bash-strict-mode/.
-    # - See https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#The-Set-Builtin
-    #
-    # -e: exit immediately if a pipeline, which may consist of a single simple command, a list,
-    #     or a compound command returns a non-zero status. 
-    # -u: treat unset variables and parameters other than the special parameters ‘@’ or ‘*’ as
-    #     an error when performing parameter expansion. An error message will be written to the
-    #     standard error, and a non-interactive shell will exit.
-    # -o pipefail: if set, the return value of a pipeline is the value of the last (rightmost)
-    #              command to exit with a non-zero status, or zero if all commands in the pipeline
-    #              exit successfully.
-    set -eu -o pipefail
+```bash
+# Turn on "strict mode".
+# - See http://redsymbol.net/articles/unofficial-bash-strict-mode/.
+# - See https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#The-Set-Builtin
+#
+# -e: exit immediately if a pipeline, which may consist of a single simple command, a list,
+#     or a compound command returns a non-zero status. 
+# -u: treat unset variables and parameters other than the special parameters ‘@’ or ‘*’ as
+#     an error when performing parameter expansion. An error message will be written to the
+#     standard error, and a non-interactive shell will exit.
+# -o pipefail: if set, the return value of a pipeline is the value of the last (rightmost)
+#              command to exit with a non-zero status, or zero if all commands in the pipeline
+#              exit successfully.
+set -eu -o pipefail
+```
 
 ## Add a directory to PATH only if it is not already declared
 
     GRADLE_PATH="${HOME}/Softwares/gradle-6.3/bin"
     [[ ":${PATH}:" != *":${GRADLE_PATH}:"* ]] && PATH="${GRADLE_PATH}:${PATH}"
+
+## Bash customization
+
+### Add bookmark capability into Bash
+
+Add this lines into your file "`~/.bashrc`":
+
+```bash
+if [ -d "${HOME}/.bookmarks" ]; then
+    export CDPATH=".:${HOME}/.bookmarks:/"
+    alias goto="cd -P"
+    _goto() {
+        local IFS=$'\n'
+        COMPREPLY=($(compgen -W "$(/bin/ls ~/.bookmarks)" -- ${COMP_WORDS[COMP_CWORD]}))
+    } && complete -F _goto goto
+fi
+
+bm() {
+    # Set a bookmark
+    # bm <target directory> <alias>
+
+    local _target="${1}"
+    local _alias="${2}"
+
+    if [ ! -d "${_target}" ]; then
+        printf "\"%s\" is not a directory!\n" "${_target}"
+        return
+    fi
+
+    local _bmp="${HOME}/.bookmarks/@${_alias}"
+
+    if [ -L "${_bmp}" ]; then
+      rm -i "${_bmp}"
+    fi
+
+    ln -s "${_target}" "${_bmp}"
+}
+
+bmls() {
+    # List bookmarks entries
+    ls -1 "${HOME}/.bookmarks"
+}
+```
+
+> Do not forget to reload the content of "`~/.bashrc`": `. ~/.bashrc`.
+
+Create a bookmark entry:
+
+```bash
+bm /var/log log
+```
+
+Go to entry location:
+
+```bash
+goto log
+```
+
+List all bookmark entries:
+
+```bash
+bmls
+```
+
