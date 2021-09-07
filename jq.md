@@ -426,3 +426,12 @@ Select the "first level" keys:
 python3 code/generate_data.py | jq 'keys'
 ```
 
+No pretty print. Use the option `-c`:
+
+```bash
+$ python3 code/generate_data.py | jq -c 'select(.results.Isabella) | select(.details.c) | .details'
+{"a":[],"b":{"Evelyn":89},"c":17}
+```
+
+> This option is useful when you need to select only a certain number of records, for example. Ex: `python3 code/generate_data.py | jq -c 'select(.results.Isabella) | select(.details.c) | .details' | tail -n 2`.
+
