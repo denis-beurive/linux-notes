@@ -294,3 +294,33 @@ List all bookmark entries:
 bmls
 ```
 
+# ls, find... with Perl regex
+
+Example:
+
+```bash
+find ~/ -type f | perl -ne 'chomp; print "$_\n" if ($_ =~ m/.+\.json$/)'
+```
+
+> See [Perl One Liners](perl.md)
+
+Inside a loop, it can be pretty handy:
+
+```bash
+OLDIFS=$IFS
+IFS=$'\n'
+for image in $(find "/home/denis/Images" -type f | perl -e '@v=(); while(<>) { chomp;  push @v, $_ if ($_ =~ m/\.png$/i)} print join "\n", @v'); do
+    target=$(printf "%s" "${image}" | perl -pe 's/\s+/_/g')
+    printf "image:  %s\n" "${image}"
+    printf "target: %s\n" "${target}"
+    if [ -f ${image} ]; then
+        ls ${image}
+    fi
+    printf "\n"
+done
+IFS=$OLDIFS
+```
+
+> This code does not work if file names contain "`\n`"... If you need to manipulate files which names contain "\n", then forget Bash. Use Perl, Python, PHP or Ruby instead.
+>
+> Wonder about `IFS` ? Read [this](https://mywiki.wooledge.org/IFS).
