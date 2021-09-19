@@ -285,8 +285,10 @@ bm /var/log log
 Go to entry location:
 
 ```bash
-goto log
+goto @log
 ```
+
+> Type "`@`" then press `[tab]`.
 
 List all bookmark entries:
 
