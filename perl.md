@@ -52,20 +52,29 @@ $dir = "." unless $dir;
 &loopDir($dir, "");
 exit;
 
+sub custom_cmp_files {
+    my ($a, $b) = @_;
+    return $a cmp $b;
+}
+
 sub loopDir {
    my ($dir, $margin) = @_;
    chdir($dir) || die "Cannot chdir to \"${dir}\"\n";
    local(*DIR);
    opendir(DIR, ".");
-   while (my $f = readdir(DIR)) {
-      next if ($f eq "." || $f eq "..");
-      next if (SKIP_HIDDEN && $f =~ m/^\./);
-      printf "%s%s\n", $margin, -f $f ? "* ${f}" : "+ ${f}:";
-      if (-d $f) {
-         &loopDir($f,$margin."   ");
+   my @files = ();
+   while (readdir(DIR)) { push(@files, $_); }
+   closedir(DIR);
+   @files = sort {custom_cmp_files($a, $b)} @files;
+   foreach (@files) {
+      next if ($_ eq "." || $_ eq "..");
+      next if (SKIP_HIDDEN && $_ =~ m/^\./);
+      printf "%s%s\n", $margin, -f $_ ? "* ${_}" : "+ ${_}:";
+      if (-d $_) {
+         &loopDir($_,$margin."   ");
       }
    }
-   closedir(DIR);
+
    chdir("..");
 }
 ```
