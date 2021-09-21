@@ -13,7 +13,7 @@
 * [Text manipulation](text-manip.md)
 * [Find tips](find.md)
 * [JQ tips](jq.md)
-* [Perl one liners](perl.md)
+* [Perl tools](perl.md) (one liners and scripts)
 
 # Debian based (Ubuntu, Linux Mint...)
 
