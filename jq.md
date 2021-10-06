@@ -420,6 +420,15 @@ python3 code/generate_data.py | jq '. as $v | select(.details.a | index(17)) | $
 
 ```
 
+Select records that does not match a condition (add "`| not`" after the `select` condition):
+
+
+```bash
+python3 code/generate_data.py | jq 'select(.details | not)'
+```
+
+> Here we select all records that does not contain the entry "`.details`".
+
 Select the "first level" keys:
 
 ```bash
