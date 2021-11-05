@@ -326,3 +326,12 @@ IFS=$OLDIFS
 > This code does not work if file names contain "`\n`"... If you need to manipulate files which names contain "\n", then forget Bash. Use Perl, Python, PHP or Ruby instead.
 >
 > Wonder about `IFS` ? Read [this](https://mywiki.wooledge.org/IFS).
+
+# Calcul on the command line
+
+```bash
+result=$((1024 * 1024))
+echo $result
+result=$((result * 1024))
+echo $result
+```
