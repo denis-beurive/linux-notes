@@ -2,7 +2,7 @@
 
 The following script shows how to create a menu used to select items.
 
-```bash
+```
 #!/usr/bin/env bash
 
 # Be careful: the command is represented by an array:
