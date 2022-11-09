@@ -1,10 +1,8 @@
 # Using dialog to create console menus
 
-
 The following script shows how to create a menu used to select items.
 
-
-````bash
+```bash
 #!/usr/bin/env bash
 
 # Be careful: the command is represented by an array:
