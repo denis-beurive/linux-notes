@@ -118,14 +118,17 @@ Result:
 
 ## Local variable into functions
 
-Use the keyword "`local`":
+You can:
+* use the keyword "`local`".
+* _declare_ the variable using the keyword "`declare`".
 
 ```bash
 #!/bin/bash
 
 function func {
     local mylocal=10
-    echo "In the function: mylocal = ${mylocal}"
+    declare -ri constant=20
+    echo "In the function: mylocal = ${mylocal} and constant = ${constant}"
 }
 
 func
@@ -172,9 +175,14 @@ function my_function {
 my_function
 ```
 
+> You can also use "`declare -r`"
+
 ## Return from a function
 
     return [-n]
+
+> **WARNING**: you can only return an integer value from 0 (included) to 255 (included) !
+> You cannot "return" a string.
 
 ## Find and replace
 

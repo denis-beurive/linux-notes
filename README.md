@@ -14,6 +14,7 @@
 * [Find tips](find.md)
 * [JQ tips](jq.md)
 * [Perl tools](perl.md) (one liners and scripts)
+* [Dialog](dialog.md)
 
 # Debian based (Ubuntu, Linux Mint...)
 
@@ -30,3 +31,4 @@
 * [Linux Mint Guide](https://mintguide.org/)
 * [Use the Unofficial Bash Strict Mode](http://redsymbol.net/articles/unofficial-bash-strict-mode/)
 * [A surprisingly arcane little Unix shell pipeline example](https://utcc.utoronto.ca/~cks/space/blog/unix/ShellPipelineIndeterminate)
+
