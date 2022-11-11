@@ -110,6 +110,8 @@ eval "s=\"${string}\""
 echo "${s}"
 ```
 
+> Don't forget the call to `eval`!
+
 Result:
 
     V1=10
@@ -183,6 +185,108 @@ my_function
 
 > **WARNING**: you can only return an integer value from 0 (included) to 255 (included) !
 > You cannot "return" a string.
+
+## New line in strings
+
+Use `$'\n'`
+
+```bash
+text="line 1\nline 2"
+echo "${text}"           # => line 1\nline 2
+printf "%s\n" "${text}"  # => line 1\nline 2
+
+text="line1"$'\n'"line2"
+echo "${text}"           # => line 1
+                         #    line 2
+printf "%s\n" "${text}"  # => line 1
+                         #    line 2
+```
+
+## Variable name defined as a viarable
+
+Use the syntax `${!variable_name}`:
+
+```bash
+text="this is a text"
+variable_name='text'
+echo ${!variable_name}   # => this is a text
+```
+
+Test whether a variable, which name is stored in a variable, is set or not:
+
+```bash
+text=""
+variable_name='text'
+if [ -n "${!variable_name+_}" ]; then
+  echo "The variable ${variable_name} is set"
+else
+  echo "The variable ${variable_name} is not set"
+fi # => The variable text is set
+
+variable_name='unexpected_name'
+if [ -n "${!variable_name+_}" ]; then
+  echo "The variable ${variable_name} is set"
+else
+  echo "The variable ${variable_name} is not set"
+fi # => The variable unexpected_name is not set
+
+```
+
+## Using hash tables
+
+```bash
+# Create an array map
+declare -A array_map=([key1]='value1' [key2]='value2')
+
+# Add an entry
+array_map["key3"]='value3'
+printf "%s\n" "${array_map["key3"]}" # => value3
+
+# Test if an entry exists
+array_map["key3"]='value3'
+if [ ${array_map["key3"]+_} ]; then
+  echo "The entry key3 is set"
+else
+  echo "The entry key3 is not set"
+fi # => The entry key3 is set
+
+array_map["key3"]=''
+if [ ${array_map["key3"]+_} ]; then
+  echo "The entry key3 is set"
+else
+  echo "The entry key3 is not set"
+fi # => The entry key3 is set
+
+if [ ${array_map["unexpected_key"]+_} ]; then
+  echo "The entry unexpected_key is set"
+else
+  echo "The entry unexpected_key is not set"
+fi # => The entry unexpected_key is not set
+
+# Loop over the keys
+for key in "${!array_map[@]}"; do
+  printf -- "- key (%s)\n" "${key}"
+done # => - key (key2)
+     #    - key (key3)
+     #    - key (key1)
+
+# Sort the keys, then loop.
+IFS=$'\n'
+declare -a keys=($(sort <<<"${!array_map[*]}")); unset IFS
+for key in "${keys[@]}"; do
+  printf -- "- key (%s)\n" "${key}"
+done # => - key (key1)
+     #    - key (key2)
+     #    - key (key3)
+
+# Delete en entry
+unset "array_map[\"key3\"]"
+if [ ${array_map["key3"]+_} ]; then
+  echo "The entry key3 is set"
+else
+  echo "The entry key3 is not set anymore"
+fi # => The entry key3 is not set anymore
+```
 
 ## Find and replace
 
