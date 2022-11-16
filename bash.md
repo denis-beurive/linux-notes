@@ -7,7 +7,7 @@
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
-readonly __DIR__="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+__DIR__="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; declare -r __DIR__
 ```
 
 ## Create a file "in memory"
@@ -342,6 +342,42 @@ set -eu -o pipefail
 
     GRADLE_PATH="${HOME}/Softwares/gradle-6.3/bin"
     [[ ":${PATH}:" != *":${GRADLE_PATH}:"* ]] && PATH="${GRADLE_PATH}:${PATH}"
+
+## What is the path to the executed command ?
+
+You all know the `which` command. But did you know this trick ?
+
+```bash
+$ strace true 2>&1 > /dev/null | head -n 1
+execve("/bin/true", ["true"], [/* 60 vars */]) = 0
+```
+
+## Designing daemons for clean stopping using STOP files
+
+One way to stop a process is to use a "STOP file." The process regularly looks for a predefined file. If this file exists, then the process stops itself.
+
+This technique may be tricky if several instances of the same process are running. Indeed, once the process stopped, the "STOP file" must be removed (otherwise it becomes impossible to start the process again). If more than one instance of the process is running, then you must wait for all instances to stop before you can remove the "STOP file" (otherwise, some instances will continue to run).
+
+The folling scripts implement:
+* [process.sh](code/process.sh): a simple process that is launched as a daemon. Any number of this process can be launched.
+* [stop-process.sh](code/stop-process.sh): a script used to stop all the instances of the process.
+
+Start as many scripts as you want (for example, 3 instances):
+```bash
+$ bin/nohup /path/to/process.sh --fake-arg 0<&- &>/dev/null &
+$ bin/nohup /path/to/process.sh --fake-arg 0<&- &>/dev/null &
+$ bin/nohup /path/to/process.sh --fake-arg 0<&- &>/dev/null &
+```
+
+Then stop all the instances:
+
+```bash
+echo "process.sh" | /path/to/stop-process.sh
+```
+
+> Please note:
+> * that the name of the process to stop is passed to the "stop-process.sh" through the standard input, and not through command line arguments. The reason for this choice is the following: in order to find out whether the process is executing or not, we parse the output of the "ps" command. We are looking for the string that represents the name of the process to stop. If this name is part of the command line of "stop-process.sh," then we'd always find it.
+> * this technique is not 100% bulletproof. If the name of the process to stop (that is "`process.sh`") is used in a command line that does not signal the process, then this technique does not work properly. One way to solve this issue is to base the detection of the process based on the presence of a "PID file" (that way, we don't rely on the output of "ps" to determine whether the process is running or not).
 
 ## Bash customization
 
