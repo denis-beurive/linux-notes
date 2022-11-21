@@ -118,7 +118,9 @@ Result:
     V2=20
     V3="${V3}"
 
-## Local variable into functions
+## Local variable
+
+### Mutable
 
 You can:
 * use the keyword "`local`".
@@ -129,7 +131,7 @@ You can:
 
 function func {
     local mylocal=10
-    declare -ri constant=20
+    declare -i constant=20
     echo "In the function: mylocal = ${mylocal} and constant = ${constant}"
 }
 
@@ -163,9 +165,9 @@ Result:
     In the function: mylocal = 10
     Outside the function: mylocal = 10
 
-## Local and readonly
+### Immutable
 
-Use `local -r`. For example:
+Use `local -r` or `declare -r`. For example:
 
 ```bash
 #!/bin/bash
@@ -177,14 +179,69 @@ function my_function {
 my_function
 ```
 
-> You can also use "`declare -r`"
-
 ## Return from a function
 
     return [-n]
 
-> **WARNING**: you can only return an integer value from 0 (included) to 255 (included) !
-> You cannot "return" a string.
+> **WARNING**:
+> * you can only return an integer value from 0 (included) to 255 (included) !
+>   You cannot "return" a string.
+> * Keep in mind that, for BASH, 0 means TRUE. Any other values mean FALSE.
+
+Usage:
+
+```bash
+#!/usr/bin/env bash
+
+# For BASH, true is 0 and false is any value other than 0.
+function true_or_false {
+  if [ "${1}" == "true" ]; then return 0; fi
+  if [ "${1}" == "false" ]; then return 1; fi
+  return 2
+}
+
+if true_or_false "true"; then
+  echo "true"
+else
+  echo "not true"
+fi # => rue
+
+if true_or_false "false"; then
+  echo "true"
+else
+  echo "not true"
+fi # => not true
+
+if true_or_false "other value"; then
+  echo "true"
+else
+  echo "not true"
+fi # => not true
+
+if true_or_false "true" && true_or_false "true"; then
+  echo "true and true"
+else
+  echo "not true and true"
+fi # => true and true
+
+if ! true_or_false "false" && ! true_or_false "false"; then
+  echo "not false and not false"
+else
+  echo "not \"not false and not false\""
+fi # => not false and not false
+
+if true_or_false "true" || true_or_false "false"; then
+  echo "true or false"
+else
+  echo "not \"true or false\""
+fi # => true or false
+
+if true_or_false "true" && [ $((1+1)) -eq 2 ]; then
+  echo "true and 1+1=2"
+else
+  echo "not \"true and 1+1=2\""
+fi # => true and 1+1=2
+```
 
 ## New line in strings
 
@@ -200,6 +257,25 @@ echo "${text}"           # => line 1
                          #    line 2
 printf "%s\n" "${text}"  # => line 1
                          #    line 2
+```
+
+## Wait forever
+
+```bash
+# Run forever.
+sleep infinity &
+wait $! # $! means PID of last backgrounded process.
+```
+
+## Execute a handler when the script terminates
+
+```bash
+function cleanup() {
+    # Delete my PID file.
+    rm -f "/tmp/${$}"
+}
+
+trap cleanup EXIT
 ```
 
 ## Variable name defined as a viarable
@@ -288,11 +364,65 @@ else
 fi # => The entry key3 is not set anymore
 ```
 
-## Find and replace
+## Using SED for current operations
 
-Example:
+First, you should always activate the use of extended regular expressions (using the option `-E`).
 
-    echo "toto.git" | sed -e 's/.git$//'
+```bash
+TEXT=$(cat <<'EOS'
+a line1
+b line2
+c line3
+1 line4
+2 line5
+EOS
+); declare -r TEXT
+```
+
+### Filter: keep only the lines that match a given regular expression
+
+Use the `p` command.
+
+```bash
+echo "a line1"  | sed -n -E '/^[a-z]+\s+.+/p'  # => a line1
+echo "a1 line1" | sed -n -E '/^[a-z]+\s+.+$/p' # =>
+echo "${TEXT}"  | sed -n -E '/^[a-z]+\s+.+/p'  # => a line1
+                                               #    b line2
+                                               #    c line3
+echo "/path/to/bin.exe"     | sed -n -E '/^\/?[a-z]+(\/[a-z]+)?\/[a-z]+\.exe$/p' # => /path/to/bin.exe
+echo "/path/bin.exe"        | sed -n -E '/^\/?[a-z]+(\/[a-z]+)?\/[a-z]+\.exe$/p' # => /path/bin.exe
+echo "/path/to/the/bin.exe" | sed -n -E '/^\/?[a-z]+(\/[a-z]+)?\/[a-z]+\.exe$/p' # =>
+```
+
+### Delete only the lines that match a given regular expression.
+
+Use the `d` command.
+
+```bash
+echo "a line1"  | sed -E '/^[a-z]+\s+.+/d'     # =>
+echo "a1 line1" | sed -E '/^[a-z]+\s+.+$/d'    # => a1 line1
+echo "${TEXT}"  | sed -E '/^[a-z]+\s+.+$/d'    # => 1 line4
+                                               #    2 line5
+```
+
+### Search and replace with "captures".
+
+The content of the first capture is held by the variable `\1`.
+The content of the second capture is held by the variable `\2`...
+
+```bash
+echo "a line1"   | sed -E 's/^[a-z]+\s+(.+)/word \1/'  # => word line1
+echo "a1 line1"  | sed -E 's/^[a-z]+\s+(.+)/word \1/' # => a1 line1
+```
+
+### Search and replace all occurrences.
+
+Une the option `g`.
+
+```bash
+echo "a line1"   | sed -E 's/([a-z]+)/word/g'  # => word word1
+echo "a1 line1"  | sed -E 's/([a-z]+)/word/g'  # => word1 word1
+```
 
 ## Immediately exit if any command has a non-zero exit status
 
@@ -317,6 +447,8 @@ If set, the return value of a pipeline is the value of the last (rightmost) comm
     set -o pipefail
 
 > See [The Set Builtin](https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html#The-Set-Builtin)
+>
+> You can force the value of the last command of a pipeline to be 0 with this trick: `command1 | command2 | true`
 
 ## Bash "strict mode"
 
@@ -352,7 +484,9 @@ $ strace true 2>&1 > /dev/null | head -n 1
 execve("/bin/true", ["true"], [/* 60 vars */]) = 0
 ```
 
-## Designing daemons for clean stopping using STOP files
+## Designing daemons for clean stopping
+
+### Using PID files
 
 One way to stop a process is to use a "STOP file." The process regularly looks for a predefined file. If this file exists, then the process stops itself.
 
@@ -378,6 +512,59 @@ echo "process.sh" | /path/to/stop-process.sh
 > Please note:
 > * that the name of the process to stop is passed to the "stop-process.sh" through the standard input, and not through command line arguments. The reason for this choice is the following: in order to find out whether the process is executing or not, we parse the output of the "ps" command. We are looking for the string that represents the name of the process to stop. If this name is part of the command line of "stop-process.sh," then we'd always find it.
 > * this technique is not 100% bulletproof. If the name of the process to stop (that is "`process.sh`") is used in a command line that does not signal the process, then this technique does not work properly. One way to solve this issue is to base the detection of the process based on the presence of a "PID file" (that way, we don't rely on the output of "ps" to determine whether the process is running or not).
+
+### Using PID files
+
+[This directory](code/pid-files) contains an example that illustrates the use of PID files.
+
+When a process \"process__ID__.sh\" (with `__ID__` = `[1, 2, 3, 4, 5, 6]`) starts, it creates PID file in the directory `/tmp/process__ID__.sh-pids`. The name of the file is the PID of the process (ex: `12654`).
+
+> See variable `PID_FOLDER`:
+>
+> ```bash
+> declare -r PROCESS_NAME="process__ID__.sh"         # __ID__ = 1, 2, 3, 4, 5, 6
+> declare -r PID_FOLDER="/tmp/${PROCESS_NAME}-pids"
+> ```
+
+For example, when the process `process1.sh` starts, it creates a PID file in the directory `/tmp/process1.sh-pids`. The name of this file is the PID of the process.
+
+When you call the script [process-stop.sh](code/pid-files/process-stop.sh) with the name of the process as argument (ex: `process1.sh`: `process-stop.sh process1.sh`), it will look in the directory that contains the PIDs (`/tmp/process1.sh-pids`) associated with the process.
+
+Using this example:
+
+Generate the processes for tests: execute the script `generate-processes.sh`.
+
+This script generates 6 process. After the execution of this script, you have:
+
+```bash
+$ ls -1 process*.sh
+process1.sh
+process2.sh
+process3.sh
+process4.sh
+process5.sh
+process6.sh
+```
+
+Check if the processes are running:
+
+```bash
+$ ps awx | sed -rn '/process[[:digit:]]+\.sh/p'
+```
+
+Start / stop all processes:
+
+```bash
+./all-processes.sh start # or ./all-processes.sh start 10
+./all-processes.sh stop
+```
+
+Start / stop a single process (for example `process1.sh`):
+
+```bash
+./process-start.sh process1.sh # or ./process-start.sh process1.sh 10
+./process-stop.sh process1.sh
+```
 
 ## Bash customization
 
