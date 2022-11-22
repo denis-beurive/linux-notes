@@ -629,6 +629,16 @@ Start / stop a single process (for example `process1.sh`):
 Add this lines into your file "`~/.bashrc`":
 
 ```bash
+# ----------------------------------------------------
+# Bookmarks
+#
+# create a bookmark entry:    bm /var/log log
+# go to a bookmark entry:     goto @log
+# list all bookmark entries:  bmls
+#
+# Make sure that the directory "~/.bookmarks" exists.
+# ----------------------------------------------------
+
 if [ -d "${HOME}/.bookmarks" ]; then
     export CDPATH=".:${HOME}/.bookmarks:/"
     alias goto="cd -P"
@@ -638,29 +648,52 @@ if [ -d "${HOME}/.bookmarks" ]; then
     } && complete -F _goto goto
 fi
 
+# Create a bookmark entry.
+#
+# Example: bm /var/log log
+#          Then use "goto @log" to go to the location
+#          pointed by "log".
+#
+# @param $1 the path to the target directory.
+# @param $2 the name of the entry.
 bm() {
-    # Set a bookmark
-    # bm <target directory> <alias>
+    local -r target="${1}"
+    local -r entry_name="${2}"
 
-    local _target="${1}"
-    local _alias="${2}"
-
-    if [ ! -d "${_target}" ]; then
-        printf "\"%s\" is not a directory!\n" "${_target}"
+    if [ ! -d "${target}" ]; then
+        printf "Target \"%s\" is not a directory!\n" "${target}"
         return
     fi
 
-    local _bmp="${HOME}/.bookmarks/@${_alias}"
+    local -r entry_path="${HOME}/.bookmarks/@${entry_name}"
 
-    if [ -L "${_bmp}" ]; then
-      rm -i "${_bmp}"
+    local go="yes"
+    # Is the entry already set?
+    if [ -L "${entry_path}" ]; then
+      printf "The bookmark \"%s\" is already set.\n" "${entry_name}"
+      local response
+      while true; do
+          read -p "Do you want to override the bookmark (y/n)? " response
+          case $response in
+              [Yy]* ) rm -f "${entry_path}"
+                      break;;
+              [Nn]* ) go="no"
+                      break;;
+              * ) echo "Please answer \"y\" or \"n\".";;
+          esac
+      done
     fi
 
-    ln -s "${_target}" "${_bmp}"
+    if [ "${go}" == "yes" ]; then
+      ln -s "${target}" "${entry_path}"
+      printf "Bookmark \"%s\" created (-> \"%s\").\n" "${entry_name}" "${target}"
+    else
+      echo "Operation aborted"
+    fi
 }
 
+# List bookmarks entries.
 bmls() {
-    # List bookmarks entries
     ls -1 "${HOME}/.bookmarks"
 }
 ```
