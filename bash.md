@@ -262,9 +262,15 @@ printf "%s\n" "${text}"  # => line 1
 ## Wait forever
 
 ```bash
-# Run forever.
+sleep infinity
+```
+
+Or (it can be interesting):
+
+```bash
+# Run forever
 sleep infinity &
-wait $! # $! means PID of last backgrounded process.
+wait $! # $! means PID of last backgrounded process
 ```
 
 ## Execute a handler when the script terminates
@@ -405,6 +411,14 @@ echo "${TEXT}"  | sed -E '/^[a-z]+\s+.+$/d'    # => 1 line4
                                                #    2 line5
 ```
 
+You can set multiple "filters" at once:
+
+```bash
+echo "the fox"  | sed -E '/^the\s+/d; /\s+fox$/d'  # =>
+echo "the dog"  | sed -E '/^the\s+/d; /\s+fox$/d'  # =>
+echo "a dog"    | sed -E '/^the\s+/d; /\s+fox$/d'  # => a dog
+```
+
 ### Search and replace with "captures".
 
 The content of the first capture is held by the variable `\1`.
@@ -415,6 +429,13 @@ echo "a line1"   | sed -E 's/^[a-z]+\s+(.+)/word \1/'  # => word line1
 echo "a1 line1"  | sed -E 's/^[a-z]+\s+(.+)/word \1/' # => a1 line1
 ```
 
+You can set multiple "converters" at once:
+
+```bash
+cho "1234"    | sed -E 's/A/a/g; s/B/b/g' # => 1234
+echo "ABCDEF"  | sed -E 's/A/a/g; s/B/b/g' # => abCDEF
+```
+
 ### Search and replace all occurrences.
 
 Une the option `g`.
@@ -422,6 +443,13 @@ Une the option `g`.
 ```bash
 echo "a line1"   | sed -E 's/([a-z]+)/word/g'  # => word word1
 echo "a1 line1"  | sed -E 's/([a-z]+)/word/g'  # => word1 word1
+```
+
+### Mixing deletion and replacement
+
+```bash
+echo "the fox"  | sed -E '/^the\s+/d; s/\s+(.+)$/ dog/;' # =>
+echo "a fox"    | sed -E '/^the\s+/d; s/\s+(.+)$/ dog/;' # => a dog
 ```
 
 ## Immediately exit if any command has a non-zero exit status
@@ -483,6 +511,8 @@ You all know the `which` command. But did you know this trick ?
 $ strace true 2>&1 > /dev/null | head -n 1
 execve("/bin/true", ["true"], [/* 60 vars */]) = 0
 ```
+
+> Obviously, you'd better user `which`. But the use of `strace` can be "enlightening" :-)
 
 ## Designing daemons for clean stopping
 
