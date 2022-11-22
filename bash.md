@@ -118,6 +118,32 @@ Result:
     V2=20
     V3="${V3}"
 
+## Use xargs
+
+Please note the difference between the first and the second example. In the second example, we use a shell to interpret the command.
+
+Example 1:
+
+```bash
+$ echo "bla bla bla" | xargs -I x printf "<%s>\n" x
+<bla bla bla>
+
+$ echo "bla bla bla" | xargs -I %% printf "<%s>\n" %%
+<bla bla bla>
+```
+
+Example 2:
+
+```bash
+$ echo a b c | xargs -I %% sh -c 'printf "<%s>\n" %%'
+<a>
+<b>
+<c>
+
+$ echo a b c | xargs -I %% sh -c 'printf "<%s> <%s> <%s>\n" %%'
+<a> <b> <c>
+```
+
 ## Local variable
 
 ### Mutable
