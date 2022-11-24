@@ -396,6 +396,8 @@ else
 fi # => The entry key3 is not set anymore
 ```
 
+> Don't use the option "`set -u`". On some versions of BASH, this option may cause problems with empty hash maps.
+
 ## Using SED for current operations
 
 First, you should always activate the use of extended regular expressions (using the option `-E`).
