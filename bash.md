@@ -340,6 +340,58 @@ fi # => The variable unexpected_name is not set
 
 ```
 
+## Using arrays
+
+```bash
+#!/usr/bin/env bash
+
+declare -a array=('e1' 'e2' 'e3')
+
+# Add an element.
+array[3]='e4'
+
+# Length of the array
+printf "Length of array: %d\n" "${#array[@]}"  # => 4
+
+# Access the elements of the array
+printf "array[0]=%s\n" "${array[0]}" # => e1
+printf "array[1]=%s\n" "${array[1]}" # => e2
+printf "array[2]=%s\n" "${array[2]}" # => e3
+printf "array[3]=%s\n" "${array[3]}" # => e4
+
+# Split a string into an array
+IFS=' ' read -r -a array <<< "a1 a2 a3"
+printf "array[0]=%s\n" "${array[0]}" # => a1
+printf "array[1]=%s\n" "${array[1]}" # => a2
+printf "array[2]=%s\n" "${array[2]}" # => a3
+
+IFS=', ' read -r -a array <<< "a1, a2, a3"
+printf "array[0]=<%s>\n" "${array[0]}" # => <a1>
+printf "array[1]=<%s>\n" "${array[1]}" # => <a2>
+printf "array[2]=<%s>\n" "${array[2]}" # => <a3>
+
+# Loop over an array
+
+array=('e1' 'e2' 'e3')
+for e in "${array[@]}"; do
+  printf "[%s]\n" "${e}"
+done # => [a1]
+     #    [a2]
+     #    [a3]
+
+# Join a array (into a string)
+# Thanks to: https://stackoverflow.com/questions/1527049/how-can-i-join-elements-of-an-array-in-bash
+
+join_by() { local d="$1" f="$2"; shift 2 && printf %s "$f" "${@/#/$d}"; }
+
+array=('e1' 'e2' 'e3')
+printf "%s\n" "$(join_by ', ' 'a' 'b' 'c')" # => "a, b, c"
+printf "%s\n" "$(join_by ',' ${array[*]})"  # => "e1,e2,e3"
+printf "%s\n" "$(join_by ', ' ${array[*]})" # => "e1, e2, e3"
+array=()
+printf "%s\n" "$(join_by ',' ${array[*]})"  # => ""
+```
+
 ## Using hash tables
 
 ```bash
