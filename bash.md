@@ -392,6 +392,8 @@ array=()
 printf "%s\n" "$(join_by ',' ${array[*]})"  # => ""
 ```
 
+> Don't use the option "set -u". This option may causes problems with empty arrays.
+
 ## Using hash tables
 
 ```bash
@@ -448,7 +450,7 @@ else
 fi # => The entry key3 is not set anymore
 ```
 
-> Don't use the option "`set -u`". On some versions of BASH, this option may cause problems with empty hash maps.
+> Don't use the option "`set -u`". This option causes problems with empty hash maps.
 
 ## Using SED for current operations
 
