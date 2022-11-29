@@ -814,4 +814,60 @@ result=$((1024 * 1024))
 echo $result
 result=$((result * 1024))
 echo $result
+
+declare -i a=1 b=2
+printf "a+b=%d\n" $((a+b)) # => 3
+printf "a-b=%d\n" $((a-b)) # => -1
+printf "a*b=%d\n" $((a*b)) # => 2
+```
+
+But be careful !!!
+
+```bash
+declare -i a=1 b=2
+printf "a/b=%f\n" $((a/b))        # => 0,000000 !!!
+printf "a/b=%f\n" $(expr $a / $b) # => 0,000000 !!!
+a=4; b=2
+printf "a/b=%f\n" $((a/b))        # => 2,000000
+```
+
+If you want to do a real calculus, you can use `awk`
+
+```bash
+awk -v a=1 -v b=2 'BEGIN { printf("%f\n", a/b) }'      # => 0.500000
+awk -v a=1 -v b=2 'BEGIN { printf("%f\n", log(a/b)) }' # => -0.693147
+awk -v a=1 -v b=2 'BEGIN { printf("%f\n", cos(a/b)) }' # => 0.877583
+awk -v a=1 -v b=2 'BEGIN { printf("%d\n", 10 % 3) }'   # => 1
+awk -v a=1 -v b=2 'BEGIN { printf("%d\n", 10^3) }'     # => 1000
+```
+
+## Is string length limited ?
+
+Response: no
+
+let's test...
+
+```bash
+#!/usr/bin/env bash
+
+declare -ri NUMBER_OF_KB=100
+declare -i length
+
+length=$(perl -e "print 'a' x (1024) x ${NUMBER_OF_KB}" | wc -c)
+if ((length != $((1024 * NUMBER_OF_KB)) )); then
+  printf "ERROR: expected %d (got %d)!" $((1024 * NUMBER_OF_KB)) "${length}"
+  exit 1
+else
+  printf "OK: %d\n" "${length}"
+fi
+
+# Make sure that a string can be huge.
+text=$(perl -e "print 'a' x (1024) x ${NUMBER_OF_KB}")
+length=${#text}
+if ((length != $((1024 * NUMBER_OF_KB)) )); then
+  printf "ERROR: expected %d (got %d)!" $((1024 * NUMBER_OF_KB)) "${length}"
+  exit 1
+else
+  printf "OK: %d\n" "${length}"
+fi
 ```
