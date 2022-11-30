@@ -452,6 +452,109 @@ fi # => The entry key3 is not set anymore
 
 > Don't use the option "`set -u`". This option causes problems with empty hash maps.
 
+## Hash map with (clean) indented multiline values
+
+```bash
+#!/usr/bin/env bash
+
+# Declare the hash map
+declare -A hash=(
+    [key 1]=$'\n'\
+'          'line1$'\n'\
+'          'line1$'\n'\
+'          'line3
+    [key 2]=$'\n'\
+'          '"line 4"$'\n'\
+'          '"line 5"$'\n'\
+'          '"line 6"
+)
+
+# Convert the values of keys into arrays, and print the resulting array
+printf "key 1 => [%s]\n" "${hash[key 1]}"
+printf "key 2 => [%s]\n" "${hash[key 2]}"
+```
+
+Result:
+
+```
+key 1 => [
+          line1
+          line1
+          line3]
+key 2 => [      
+          line 4
+          line 5
+          line 6]
+```
+
+> Please note that you can easily trim the elements of the hash. See next section "Hash map with arrays as values".
+
+## Hash map with arrays as values
+
+```bash
+#!/usr/bin/env bash
+
+# Declare the hash map
+declare -A hash=(
+    [key 1]=$'\n'\
+'          'line1$'\n'\
+'          'line1$'\n'\
+'          'line3
+    [key 2]=$'\n'\
+'          '"line 4"$'\n'\
+'          '"line 5"$'\n'\
+'          '"line 6"
+)
+
+# Convert the values of keys into arrays, and print the resulting array
+declare -a array1=()
+printf "key 1 => [%s]\n" "${hash[key 1]}"
+while IFS= read -r element; do
+  element=$(echo "${element}" | sed -E 's/^\s+//; s/\s+$//')
+  if [ -z "${element}" ]; then continue; fi
+  array1+=("${element}")
+done <<<"${hash[key 1]}"
+
+echo "array1:"
+for element in "${array1[@]}"; do
+  printf "   [%s]\n" "${element}"
+done
+
+declare -a array2=()
+printf "key 2 => [%s]\n" "${hash[key 2]}"
+while IFS= read -r element; do
+  element=$(echo "${element}" | sed -E 's/^\s+//; s/\s+$//')
+  if [ -z "${element}" ]; then continue; fi
+  array2+=("${element}")
+done <<<"${hash[key 2]}"
+
+echo "array2:"
+for element in "${array2[@]}"; do
+  printf "   [%s]\n" "${element}"
+done
+```
+
+Result:
+
+```
+key 1 => [
+          line1
+          line1
+          line3]
+array1:
+   [line1]      
+   [line1]      
+   [line3]      
+key 2 => [      
+          line 4
+          line 5
+          line 6]
+array2:
+   [line 4]
+   [line 5]
+   [line 6]
+```
+
 ## Using SED for current operations
 
 First, you should always activate the use of extended regular expressions (using the option `-E`).
