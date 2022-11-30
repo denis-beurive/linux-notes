@@ -555,6 +555,85 @@ array2:
    [line 6]
 ```
 
+## Hash map with hash maps as values
+
+```bash
+#!/usr/bin/env bash
+
+## Declare the hash map
+declare -rA hash=(
+    [key 1]=$'\n'\
+'          '"start: cmd1"$'\n'\
+'          '"stop:  cmd2"
+    [key 2]=$'\n'\
+'          '"start: cmd3"$'\n'\
+'          '"stop:  cmd4"
+)
+
+# Process the hash map (produce 2 hash maps)
+declare -A all_starts=()
+declare -A all_stops=()
+declare -i got_start got_stop
+
+for key in "${!hash[@]}"; do
+  got_start=0
+  got_stop=0
+  value="${hash[$key]}"
+
+  while IFS= read -r line; do
+    line=$(echo "${line}" | sed -E 's/^\s+//; s/\s+$//')
+    if [ -z "${line}" ]; then continue; fi
+    action=$(echo "${line}" | sed -E 's/^((start|stop)\s*:.*)$/\2/i')
+    action="${action,,}" # convert in lowercase
+
+    if [ "${action}" != "start" ] && [ "${action}" != "stop" ]; then
+      printf "ERROR: unexpected action \"%s\"" "${action}"
+      exit 1
+    fi
+
+    command=$(echo "${line}" | sed -E 's/^((start|stop)\s*:\s*(.+))$/\3/i')
+    printf "(%s) => (%s)\n" "${action}" "${command}"
+    if [ "${action}" == "start" ]; then
+      all_starts["${key}"]="${command}"
+      got_start=1
+    else
+      all_stops["${key}"]="${command}"
+      got_stop=1
+    fi
+  done <<<"${value}"
+
+  if (( got_start == 0 )) || (( got_stop == 0 )); then
+    printf "ERROR: invalid value for key \"%s\"" "${key}"
+  fi
+done
+
+# Print the result of the previous treatment
+echo "START:"
+for key in "${!all_starts[@]}"; do
+  printf "   [%s] => [%s]\n" "${key}" "${all_starts["${key}"]}"
+done
+
+echo "STOP:"
+for key in "${!all_stops[@]}"; do
+  printf "   [%s] => [%s]\n" "${key}" "${all_stops["${key}"]}"
+done
+```
+
+Result:
+
+```
+(start) => (cmd3)
+(stop) => (cmd4)
+(start) => (cmd1)
+(stop) => (cmd2)
+START:              
+   [key 2] => [cmd3]
+   [key 1] => [cmd1]
+STOP:              
+   [key 2] => [cmd4]
+   [key 1] => [cmd2]
+```
+
 ## Using SED for current operations
 
 First, you should always activate the use of extended regular expressions (using the option `-E`).
