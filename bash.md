@@ -634,6 +634,79 @@ STOP:
    [key 1] => [cmd2]
 ```
 
+You can simplify a litle bit:
+
+```bash
+#!/usr/bin/env bash
+
+# Just as an explanation
+text="a b c d"
+IFS=' ' read -r -a array <<< "${text}"
+for e in "${array[@]}"; do
+  printf "[%s]\n" "${e}"
+done
+
+## Declare the hash map
+declare -rA hash=(
+    [key 1]=\
+'            start: cmd1'~\
+'            stop:  cmd2'
+    [key 2]=\
+'            start: cmd3'~\
+'            stop:  cmd4'
+)
+
+declare -A all_starts=()
+declare -A all_stops=()
+declare -i got_start got_stop
+
+for key in "${!hash[@]}"; do
+  got_start=0
+  got_stop=0
+  value="${hash[$key]}"
+
+  value=$(echo "${value}" | sed -E 's/^\s+//; s/\s+$//; s/~\s+/~/g')
+  IFS='~' read -r -a lines <<< "${value}"
+
+  for line in "${lines[@]}"; do
+    line=$(echo "${line}" | sed -E 's/^\s+//; s/\s+$//')
+    if [ -z "${line}" ]; then continue; fi
+    action=$(echo "${line}" | sed -E 's/^((start|stop)\s*:.*)$/\2/i')
+    action="${action,,}" # convert in lowercase
+
+    if [ "${action}" != "start" ] && [ "${action}" != "stop" ]; then
+      printf "ERROR: unexpected action \"%s\"" "${action}"
+      exit 1
+    fi
+
+    command=$(echo "${line}" | sed -E 's/^((start|stop)\s*:\s*(.+))$/\3/i')
+    printf "(%s) => (%s)\n" "${action}" "${command}"
+    if [ "${action}" == "start" ]; then
+      all_starts["${key}"]="${command}"
+      got_start=1
+    else
+      all_stops["${key}"]="${command}"
+      got_stop=1
+    fi
+  done <<<"${value}"
+
+  if (( got_start == 0 )) || (( got_stop == 0 )); then
+    printf "ERROR: invalid value for key \"%s\"" "${key}"
+  fi
+done
+
+# Print the result of the previous treatment
+echo "START:"
+for key in "${!all_starts[@]}"; do
+  printf "   [%s] => [%s]\n" "${key}" "${all_starts["${key}"]}"
+done
+
+echo "STOP:"
+for key in "${!all_stops[@]}"; do
+  printf "   [%s] => [%s]\n" "${key}" "${all_stops["${key}"]}"
+done
+```
+
 ## Using SED for current operations
 
 First, you should always activate the use of extended regular expressions (using the option `-E`).
