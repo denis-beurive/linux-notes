@@ -5,10 +5,21 @@
 ```bash
 #!/usr/bin/env bash
 
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
-__DIR__="$( cd -P "$( dirname "$SOURCE" )" && pwd )"; declare -r __DIR__
+__FILE_NAME__="${BASH_SOURCE[0]}"
+while [ -h "${__FILE_NAME__}" ] ; do __FILE_NAME__="$(readlink "${__FILE_NAME__}")"; done
+__DIR__="$( cd -P "$( dirname "${__FILE_NAME__}" )" && pwd )"
+declare -r __DIR__
+__FILE_NAME__="$(basename "${__FILE_NAME__}")"
+declare -r __FILE_NAME__
+declare -r __FILE__="${__DIR__}/${__FILE_NAME__}"
+
+echo "${__DIR__}"        # => /c/Users/denis.beurive/CLionProjects/nukefrlis/test
+echo "${__FILE_NAME__}"  # => test-bash.sh
+echo "${__FILE__}"       # => /c/Users/denis.beurive/CLionProjects/nukefrlis/test/test-bash.sh
 ```
+
+> This is pretty useful because it allows you to build absolute paths relatively to the
+> path of the script itself.
 
 ## Create a file "in memory"
 
@@ -96,8 +107,8 @@ Result:
 ```bash
 #!/bin/bash
 
-readonly V1=10
-readonly V2=20
+readonly V1="10" # you can use "declare -r" instead
+readonly V2="20" # you can use "declare -r" instead
 
 string=$(cat <<"EOS"
 V1="${V1}"
@@ -199,7 +210,7 @@ Use `local -r` or `declare -r`. For example:
 #!/bin/bash
 
 function my_function {
-    local -r variable=10
+    local -r variable=10 # you can use "declare -r" instead
     echo ${variable}
 }
 my_function
