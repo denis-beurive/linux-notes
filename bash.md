@@ -351,6 +351,67 @@ fi # => The variable unexpected_name is not set
 
 ```
 
+## Passing variable by reference (sort of)
+
+What if you want a function to return a hash map ? It is possible... but you have to serialize the hash. That's uselessly complex.
+
+What if you want a function that prints data to STDOUT to return a string of characters ? You can't.
+
+Well, there is a workaround to these BASH limitations. You can assign a value to a variable if you have the name of the variable. Thus, the workaround is to pass the name of the variable as a parameter to the function.
+
+Illustration:
+
+```bash
+# Print a form that asks for a "yes or no" question.
+#
+# WARNING: do not call this function using $(...) !
+#          Indeed, if you do so, messages will not be printed to the standard output.
+#          In order to retrieve the response from the user, you must use an intermediate variable
+#          whose name is passed through the third parameter.
+#
+# @param $1 the message of the question.
+# @param $2 the message to print if the user does not respond by "Oui" or "Non".
+# @param $3 the name of the variable that will be used to store the response.
+#           Please note: BASK functions don't allow return values to caller so we set variable using eval.
+#           This parameter's value cannot be set to "__response" !!!
+# @return the response of the user. It can be "yes" or "no"
+function yes_no_form {
+  if [ $# -ne 3 ]; then
+    log_error "invalid number of parameters for function \"yes_no_form\"!"
+  fi
+  declare -r message="${1}"
+  declare -r retry="${2}"
+  declare -r var="${3}"
+
+  if [ "${var}" == "__response" ]; then
+    echo "ERROR: reserved parameter value (\"${var}\") for function \"yes_no_form\""
+    exit 1
+  fi
+
+  local __response
+  while true; do
+    read -r -p "${message}: " __response
+    case "${__response}" in
+        [Oo]* ) __response="yes";;
+        [Nn]* ) __response="no";;
+        * )     __response="";
+                echo "${retry}";;
+    esac
+    if [ -n "${__response}" ]; then break; fi
+  done
+
+  # HERE !!! look at the use of "eval" !!!
+  #
+  # We set the value of the variable whose name is given by the variable "var".
+  # This is like using references.
+  eval "${var}"="${__response}"
+}
+
+response="" # this line is not mandatory, but is is cleaner.
+yes_no_form "What is your decision? (yes of no)" "Invalid response" "response"
+printf "Your decision is \"%s\"" "${response}"
+```
+
 ## Using arrays
 
 ```bash
