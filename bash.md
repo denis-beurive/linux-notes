@@ -408,7 +408,7 @@ function yes_no_form {
 }
 
 response="" # this line is not mandatory, but is is cleaner.
-yes_no_form "What is your decision? ([Y]es of [N]o)" "Invalid response" "response"
+yes_no_form "What is your decision? ([Y]es or [N]o)" "Invalid response" "response"
 printf "Your decision is \"%s\"\n" "${response}"
 ```
 
