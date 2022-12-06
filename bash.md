@@ -409,7 +409,7 @@ function yes_no_form {
 
 response="" # this line is not mandatory, but is is cleaner.
 yes_no_form "What is your decision? (yes of no)" "Invalid response" "response"
-printf "Your decision is \"%s\"" "${response}"
+printf "Your decision is \"%s\"\n" "${response}"
 ```
 
 ## Using arrays
