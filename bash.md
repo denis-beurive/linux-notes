@@ -370,7 +370,7 @@ Illustration:
 #          whose name is passed through the third parameter.
 #
 # @param $1 the message of the question.
-# @param $2 the message to print if the user does not respond by "Oui" or "Non".
+# @param $2 the message to print if the user does not respond by "yes" or "no".
 # @param $3 the name of the variable that will be used to store the response.
 #           Please note: BASK functions don't allow return values to caller so we set variable using eval.
 #           This parameter's value cannot be set to "__response" !!!
@@ -392,7 +392,7 @@ function yes_no_form {
   while true; do
     read -r -p "${message}: " __response
     case "${__response}" in
-        [Oo]* ) __response="yes";;
+        [Yy]* ) __response="yes";;
         [Nn]* ) __response="no";;
         * )     __response="";
                 echo "${retry}";;
@@ -408,7 +408,7 @@ function yes_no_form {
 }
 
 response="" # this line is not mandatory, but is is cleaner.
-yes_no_form "What is your decision? (yes of no)" "Invalid response" "response"
+yes_no_form "What is your decision? ([Y]es of [N]o)" "Invalid response" "response"
 printf "Your decision is \"%s\"\n" "${response}"
 ```
 
