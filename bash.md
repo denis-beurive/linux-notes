@@ -372,7 +372,6 @@ Illustration:
 # @param $1 the message of the question.
 # @param $2 the message to print if the user does not respond by "yes" or "no".
 # @param $3 the name of the variable that will be used to store the response.
-#           Please note: BASK functions don't allow return values to caller so we set variable using eval.
 #           This parameter's value cannot be set to "__response" !!!
 # @return the response of the user. It can be "yes" or "no"
 function yes_no_form {
@@ -469,6 +468,8 @@ printf "%s\n" "$(join_by ',' ${array[*]})"  # => ""
 ## Using hash tables
 
 ```bash
+#!/usr/bin/env bash
+
 # Create an array map
 declare -A array_map=([key1]='value1' [key2]='value2')
 
@@ -484,6 +485,12 @@ else
   echo "The entry key3 is not set"
 fi # => The entry key3 is set
 
+if [ ! ${array_map["key3"]+_} ]; then
+  echo "The entry key3 is not set"
+else
+  echo "The entry key3 is set"
+fi # => The entry key3 is set
+
 array_map["key3"]=''
 if [ ${array_map["key3"]+_} ]; then
   echo "The entry key3 is set"
@@ -495,6 +502,24 @@ if [ ${array_map["unexpected_key"]+_} ]; then
   echo "The entry unexpected_key is set"
 else
   echo "The entry unexpected_key is not set"
+fi # => The entry unexpected_key is not set
+
+if [ "${array_map["unexpected_key"]+_}" ]; then
+  echo "The entry unexpected_key is set"
+else
+  echo "The entry unexpected_key is not set"
+fi # => The entry unexpected_key is not set
+
+if [ ! ${array_map["unexpected_key"]+_} ]; then
+  echo "The entry unexpected_key is not set"
+else
+  echo "The entry unexpected_key is set"
+fi # => The entry unexpected_key is not set
+
+if [ ! "${array_map["unexpected_key"]+_}" ]; then
+  echo "The entry unexpected_key is not set"
+else
+  echo "The entry unexpected_key is set"
 fi # => The entry unexpected_key is not set
 
 # Loop over the keys
@@ -922,6 +947,104 @@ execve("/bin/true", ["true"], [/* 60 vars */]) = 0
 ```
 
 > Obviously, you'd better user `which`. But the use of `strace` can be "enlightening" :-)
+
+## Test in numeric context
+
+Use `(( ... ))`.
+
+Example:
+
+```bash
+#!/usr/bin/env bash
+
+declare -ri TRUE=1 FALSE=0
+declare -ri SUCCESS=0
+
+# -----------------------------------------
+
+true
+if (( $? == SUCCESS )); then
+  echo "Success"
+else
+  echo "Failure"
+fi # => Success
+
+true
+if (( $? != SUCCESS )); then
+  echo "Failure"
+else
+  echo "Success"
+fi # => Success
+
+# -----------------------------------------
+
+false
+if (( $? == SUCCESS )); then
+  echo "Success"
+else
+  echo "Failure"
+fi # => Failure
+
+false
+if (( $? != SUCCESS )); then
+  echo "Failure"
+else
+  echo "Success"
+fi # => Failure
+
+# -----------------------------------------
+
+function is_odd {
+  declare -ri value=$1
+  declare -i v
+  v=$(awk -v value="${value}" 'BEGIN { printf("%d\n", value%2) }')
+  if ((v == 0)); then
+    echo ${TRUE}
+  else
+    echo ${FALSE}
+  fi
+}
+
+value=4
+if (( $(is_odd $value) == TRUE )); then
+  echo "${value} is odd"
+else
+  echo "${value} is not odd"
+fi # 4 is odd
+
+if (( $(is_odd $value) == FALSE )); then
+  echo "${value} is not odd"
+else
+  echo "${value} is odd"
+fi # 4 is odd
+
+value=5
+if (( $(is_odd $value) == TRUE )); then
+  echo "${value} is odd"
+else
+  echo "${value} is not odd"
+fi # 5 is not odd
+
+if (( $(is_odd $value) == FALSE )); then
+  echo "${value} is not odd"
+else
+  echo "${value} is odd"
+fi # 5 is not odd
+
+# -----------------------------------------
+
+declare -ra array=("a" "b" "c")
+
+if (( ${#array[@]} == 3 )); then
+  echo "array has 3 elements"
+fi
+
+if (( ${#array[@]} == 2 )); then
+  echo "array has 3 elements"
+else
+  echo "array does not have 3 elements"
+fi
+```
 
 ## Designing daemons for clean stopping
 
