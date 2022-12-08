@@ -1037,13 +1037,13 @@ declare -ra array=("a" "b" "c")
 
 if (( ${#array[@]} == 3 )); then
   echo "array has 3 elements"
-fi
+fi # => array has 3 elements
 
 if (( ${#array[@]} == 2 )); then
-  echo "array has 3 elements"
+  echo "array has 2 elements"
 else
-  echo "array does not have 3 elements"
-fi
+  echo "array does not have 2 elements"
+fi # => array does not have 2 elements
 ```
 
 ## Designing daemons for clean stopping
