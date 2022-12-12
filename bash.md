@@ -59,11 +59,17 @@ A dummy function (that does nothing) may be useful if you want to test if a give
 
 ## Get a subtring
 
+Syntax: `${string:<from>:<length>}` (`<from>` starts at 0)
+
+> If `length` is omitted, it means "to the end".
+
 ```bash
-s="abcdefghi"
-a=${s:0:3}
-echo "$a"
-abc
+string="abcd"
+echo ${string:0:1}  # => a
+echo ${string:0:2}  # => ab
+echo ${string:1:1}  # => b
+echo ${string:1:2}  # => bc
+echo ${string:1}    # => bcd
 ```
 
 ## Default value
@@ -155,20 +161,6 @@ $ echo a b c | xargs -I %% sh -c 'printf "<%s> <%s> <%s>\n" %%'
 <a> <b> <c>
 ```
 
-## Extract a substring
-
-Syntax: `${string:<from>:<length>}` (`<from>` starts at 0)
-
-> If `length` is omitted, it means "to the end".
-
-```bash
-string="abcd"
-echo ${string:0:1}  # => a
-echo ${string:0:2}  # => ab
-echo ${string:1:1}  # => b
-echo ${string:1:2}  # => bc
-echo ${string:1}    # => bcd
-```
 
 ## Local variable
 
