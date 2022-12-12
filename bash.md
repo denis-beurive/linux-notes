@@ -155,6 +155,21 @@ $ echo a b c | xargs -I %% sh -c 'printf "<%s> <%s> <%s>\n" %%'
 <a> <b> <c>
 ```
 
+## Extract a substring
+
+Syntax: `${string:<from>:<length>}` (`<from>` starts at 0)
+
+> If `length` is omitted, it means "to the end".
+
+```bash
+string="abcd"
+echo ${string:0:1}  # => a
+echo ${string:0:2}  # => ab
+echo ${string:1:1}  # => b
+echo ${string:1:2}  # => bc
+echo ${string:1}    # => bcd
+```
+
 ## Local variable
 
 ### Mutable
@@ -461,6 +476,17 @@ printf "%s\n" "$(join_by ',' ${array[*]})"  # => "e1,e2,e3"
 printf "%s\n" "$(join_by ', ' ${array[*]})" # => "e1, e2, e3"
 array=()
 printf "%s\n" "$(join_by ',' ${array[*]})"  # => ""
+
+# Add element to array
+declare -a array1=("a" "b")
+array1+=("c")
+echo "${array1[@]}"  # => a b c
+
+# Concatenate arrays
+array1=("a" "b")
+declare -a array2=("c" "d")
+declare -a array3=("${array1[@]}" "${array2[@]}")
+echo "${array3[@]}"  # => a b c d
 ```
 
 > Don't use the option "set -u". This option may causes problems with empty arrays.
