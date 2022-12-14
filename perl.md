@@ -1,5 +1,46 @@
 # Perl utilities
 
+## Tips
+
+### Declare several variables at once
+
+```perl
+use strict;
+use warnings FATAL => 'all';
+use Data::Dumper;
+
+# Declare 2 variables at once
+my ($var1, $var2) = (undef) x 2;
+
+printf("%s\n", join("\n", map {defined($_) ? "defined" : "not defined"} ($var1, $var2)));
+# => not defined
+#    not defined
+```
+
+### Filter an array
+
+```perl
+
+my @array = ("a", undef, "c", undef, "d");
+my @array_filtered = grep {defined} @array;
+printf("\@array:          %d elements\n", int(@array));          # => @array:          5 elements
+printf("\@array_filtered: %d elements\n", int(@array_filtered)); # => @array_filtered: 3 elements
+print(Dumper(\@array_filtered));
+# => $VAR1 = [
+#               'a',
+#               'c',
+#               'd'
+#            ];
+
+@array = (1, 2, 3, 4);
+@array_filtered = grep { $_ % 2 == 0 } @array;
+print(Dumper(\@array_filtered));
+# => $VAR1 = [
+#               2,
+#               4
+#            ];
+```
+
 ## Perl One liner
 
 ### Read input and execute arbitrary code on the whole input
@@ -30,7 +71,7 @@ cat /etc/hosts | perl -pe 's/^[^\s]+//'
 
 > The option "`-pe`" is designed to be used for _replacements only_.
 
-## Perl script
+## Perl scripts
 
 ### Custom "tree" command
 
@@ -92,3 +133,4 @@ Other use:
 ```bash
 perl tree.pl /path/to/directory
 ```
+
