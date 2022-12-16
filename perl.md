@@ -134,3 +134,78 @@ Other use:
 perl tree.pl /path/to/directory
 ```
 
+### Extract PKCS7 certificates from emails
+
+```Perl
+#!/usr/bin/perl
+
+use strict;
+use warnings FATAL => 'all';
+use MIME::Base64;
+
+# Header must contain:
+#
+#   Content-Type: application/x-pkcs7-mime; smime-type=signed-data;
+#       name="smime.p7m"
+#   Content-Transfer-Encoding: base64
+#
+# or:
+#
+#   Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+#       Content-Transfer-Encoding: base64
+#   Content-Disposition: attachment; filename="smime.p7s"
+
+my $text=<<'EOS';
+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
+XJ/pHqF8PjqjiocUKHMJJgPcds077lUmPMNmZg==
+EOS
+
+chomp $text;
+printf("INPUT:\n\n[%s]\n\n", $text);
+
+my $data = MIME::Base64::decode($text);
+open (my $fh, '>', 'b64-decoded-file') or die;
+binmode($fh);
+print $fh $data;
+close($fh);
+
+# Extract the certificate from the body of the email:
+#
+#   openssl pkcs7 -in b64-decoded-file -inform DER -print_certs -outform PEM -out certificate.pem
+```
+
+The scripts produces the file `b64-decoded-file`. From this file, you can get the certificate:
+
+```bash
+openssl pkcs7 -in b64-decoded-file -inform DER -print_certs -outform PEM -out certificate.pem
+```
