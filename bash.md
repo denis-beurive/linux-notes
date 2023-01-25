@@ -914,6 +914,18 @@ echo "the fox"  | sed -E '/^the\s+/d; s/\s+(.+)$/ dog/;' # =>
 echo "a fox"    | sed -E '/^the\s+/d; s/\s+(.+)$/ dog/;' # => a dog
 ```
 
+### Trim a string
+
+```bash
+echo "  this is a text  " | sed -E 's/^\ +//; s/\ +$//'
+```
+
+For example:
+
+```bash
+printf "[%s]" "$(echo "  this is a text  " | sed -E 's/^\ +//; s/\ +$//')"  # => [this is a text]
+```
+
 ## Immediately exit if any command has a non-zero exit status
 
 Exit immediately if a pipeline, which may consist of a single simple command, a list, or a compound command returns a non-zero status. 
