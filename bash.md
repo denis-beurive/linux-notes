@@ -57,6 +57,16 @@ function dummy_function() {
 
 A dummy function (that does nothing) may be useful if you want to test if a given script has been sourced or not: you just check whether the dummy function is defined or not.
 
+You can also use "`:`" in an "empty" `if then else` construct.
+
+```bash
+if [ "a" = "a" ]; then
+  :
+else
+  :
+fi
+```
+
 ## Get a subtring
 
 Syntax: `${string:<from>:<length>}` (`<from>` starts at 0)
