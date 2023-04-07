@@ -38,6 +38,8 @@ Follow the procedure below:
 
 ## Encrypt / Decrypt a file using AES-256
 
+### Without password in the command line
+
 Encrypt:
 
     openssl enc -aes-256-cbc -in /path/to/the/file/to/encrypt -out /path/to/the/encrypted/file
@@ -46,6 +48,15 @@ Decrypt:
 
     openssl enc -d -aes-256-cbc -in /path/to/the/encrypted/file -out /path/to/the/decryted/file
 
+### Specify the password in the command line
+
+Encrypt:
+
+    openssl enc -aes-256-cbc -pass pass:the-password -in  /path/to/the/file/to/encrypt -out /path/to/the/encrypted/file -p
+
+Decrypt:
+
+    openssl enc -d -aes-256-cbc -pass pass:the-password -in /path/to/the/encrypted/file -out /path/to/the/decryted/file -p
 
 ## Antivirus
 
