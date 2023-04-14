@@ -1331,7 +1331,7 @@ awk -v a=1 -v b=2 'BEGIN { printf("%d\n", 10 % 3) }'   # => 1
 awk -v a=1 -v b=2 'BEGIN { printf("%d\n", 10^3) }'     # => 1000
 ```
 
-## Is string length limited ?
+# Is string length limited ?
 
 Response: no
 
@@ -1360,4 +1360,54 @@ if ((length != $((1024 * NUMBER_OF_KB)) )); then
 else
   printf "OK: %d\n" "${length}"
 fi
+```
+
+# Extract a single line from a file
+
+```bash
+# Read the Nth line of a file.
+# Note: comments and empty lines are ignored.
+# @param $1 The path to the file.
+# @param $2 The line number.
+# @return The read line.
+
+function read_line_from_file {
+  local -r _in_file="${1}"
+  local -ri _in_line_number="${2}"
+  local -r _line=$(cat "${_in_file}" | sed -E '/^\s*#/d; /^[\s\r]*$/d' | sed -n ${_in_line_number}p)
+  echo "${_line}"
+}
+
+# Usage
+
+readonly PASS_FILE='.pass'
+APIKEY_PUBLIC=$(read_line_from_file "${PASS_FILE}" 1)
+APIKEY_PRIVATE=$(read_line_from_file "${PASS_FILE}" 2)
+readonly APIKEY_PUBLIC
+readonly APIKEY_PRIVATE
+```
+
+> * Lines that start with `#` are ignored.
+> * Empty lines are ignored.
+
+# Request a RES API
+
+Template:
+
+```bash
+function get_one_batch_of_emails {
+  local -ri _in_message_status="${1}"
+  local -ri _in_limit="${2}"
+  local -ri _in_offset="${3}"
+
+  local -r _response=$(curl -s \
+        -X GET \
+        --user "${APIKEY_PUBLIC}:${APIKEY_PRIVATE}" \
+        ${URL_GET_MESSAGES}/MessageStatus=${_in_message_status}\&ShowSubject=true\&ShowContactAlt=true\&Limit=${_in_limit}\&Offset=${_in_offset})
+  echo "${_response}"
+}
+
+# Usage
+
+response=$(get_one_batch_of_emails ${message_status} ${limit} ${offset})
 ```
