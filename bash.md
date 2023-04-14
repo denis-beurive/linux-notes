@@ -1390,7 +1390,7 @@ readonly APIKEY_PRIVATE
 > * Lines that start with `#` are ignored.
 > * Empty lines are ignored.
 
-# Request a RES API
+# Request a REST API
 
 Template:
 
