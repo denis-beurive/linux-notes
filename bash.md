@@ -1374,8 +1374,8 @@ fi
 function read_line_from_file {
   local -r _in_file="${1}"
   local -ri _in_line_number="${2}"
-  local -r _line=$(cat "${_in_file}" | sed -E '/^\s*#/d; /^[\s\r]*$/d' | sed -n ${_in_line_number}p)
-  echo "${_line}"
+  local -r _line=$(cat "${_in_file}" | sed -E '/^\s*#/d; /^[\s\r]*$/d' | sed -n ${_in_line_number}p  | sed -E 's/\r//g')
+  echo -n "${_line}"
 }
 
 # Usage
@@ -1404,7 +1404,7 @@ function get_one_batch_of_emails {
         -X GET \
         --user "${APIKEY_PUBLIC}:${APIKEY_PRIVATE}" \
         ${URL_GET_MESSAGES}/MessageStatus=${_in_message_status}\&ShowSubject=true\&ShowContactAlt=true\&Limit=${_in_limit}\&Offset=${_in_offset})
-  echo "${_response}"
+  echo -n "${_response}"
 }
 
 # Usage
