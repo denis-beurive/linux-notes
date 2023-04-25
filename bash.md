@@ -59,6 +59,36 @@ printf '[This is a test\r]' | trim_ctrl_m_linux   # => [This is a test]
 printf '[This is a test\r]' | trim_ctrl_m_mac     # => [This is a test]
 ```
 
+## Find out if you are in a subshell
+
+```bash
+(if [ "$(exec sh -c 'echo "${PPID}"')" != "$$" ]; then
+    echo "you are in a subshell"
+fi)  # => will print "you're in a subshell"
+```
+
+## Set an exit hanlder
+
+```bash
+function finish {
+  # Your cleanup code here
+  :
+}
+trap finish EXIT
+```
+
+But be careful with sub-shells! This is a trap! You probably don't want your handler to be executed at the end of a sub-shell.
+
+```bash
+function finish {
+  if [ "$(exec sh -c 'echo "${PPID}"')" == "$$" ]; then
+      echo "you are NOT in a subshell"
+      # Your cleanup code here
+  fi
+}
+trap finish EXIT
+```
+
 ## Test if a function is defined
 
 ```bash
@@ -1394,6 +1424,15 @@ fi
 # Extract a single line from a file
 
 ```bash
+
+function trim_ctrl_m_mac {
+  sed -E "s/$(printf '\r')//g"
+}
+
+function trim_ctrl_m_linux {
+  sed -E "s/\r//g"
+}
+
 # Read the Nth line of a file.
 # Note: comments and empty lines are ignored.
 # @param $1 The path to the file.
@@ -1403,8 +1442,8 @@ fi
 function read_line_from_file {
   local -r _in_file="${1}"
   local -ri _in_line_number="${2}"
-  # Under Mac, you may need to replace "sed -E 's/\r//g'" by "sed -E "s/$(printf '\r')//g".
-  local -r _line=$(cat "${_in_file}" | sed -E '/^\s*#/d; /^[\s\r]*$/d' | sed -n ${_in_line_number}p  | sed -E 's/\r//g')
+  # Under Mac, you may need to replace "trim_ctrl_m_linux" by "trim_ctrl_m_mac".
+  local -r _line=$(cat "${_in_file}" | sed -E '/^\s*#/d; /^[\s\r]*$/d' | sed -n ${_in_line_number}p  | trim_ctrl_m_linux)
   echo -n "${_line}"
 }
 
