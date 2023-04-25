@@ -1403,6 +1403,7 @@ fi
 function read_line_from_file {
   local -r _in_file="${1}"
   local -ri _in_line_number="${2}"
+  # Under Mac, you may need to replace "sed -E 's/\r//g'" by "sed -E "s/$(printf '\r')//g".
   local -r _line=$(cat "${_in_file}" | sed -E '/^\s*#/d; /^[\s\r]*$/d' | sed -n ${_in_line_number}p  | sed -E 's/\r//g')
   echo -n "${_line}"
 }
