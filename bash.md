@@ -30,6 +30,35 @@ Thus, it can be accessed by any process.
 
 > To delete this file, just use `rm`: `rm /dev/shm/your_file`.
 
+## Remove CTRL-M
+
+```bash
+sed -iE 's/\r//g' /file/name
+```
+
+Under Mac OS, the previous command may not work properly. In this case, you should execute:
+
+```bash
+sed -iE "s/$(printf '\r')//g" /file/name
+```
+
+Useful functions:
+
+```bash
+function trim_ctrl_m_mac { 
+  sed -E "s/$(printf '\r')//g"
+}
+
+function trim_ctrl_m_linux { 
+  sed -E "s/\r//g" 
+}
+
+# Examples
+
+printf '[This is a test\r]' | trim_ctrl_m_linux   # => [This is a test]
+printf '[This is a test\r]' | trim_ctrl_m_mac     # => [This is a test]
+```
+
 ## Test if a function is defined
 
 ```bash
