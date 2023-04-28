@@ -145,6 +145,31 @@ If you want to execute arbitrary commands at windows creations, use `stuff`. For
 * the third region display the content of the file `/var/log/apache2/other_vhosts_access.log`.
 * the last region will receive the focus.
 
+## Customize the SCREEN ID
+
+```bash
+screen -S YourName
+```
+
+## Load the BASH environment at startup
+
+```bash
+screen /bin/bash --init-file ~/.bash_profile
+```
+
+> Of course, you can also customize the SCREEN ID: `screen -S YourName /bin/bash --init-file ~/.bash_profile`
+
+Useful function:
+
+```bash
+function myscreen {
+  local -r _name="${1}"
+  screen -S "${_name}" /bin/bash --init-file ~/.bash_profile
+}
+```
+
+> Put this function into the BASH init file.
+
 ## Links
 
 * [Screen User’s Manual](https://www.gnu.org/software/screen/manual/screen.html)
