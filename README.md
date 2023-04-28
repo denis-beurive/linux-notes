@@ -13,6 +13,7 @@
 * [Text manipulation](text-manip.md)
 * [Find tips](find.md)
 * [JQ tips](jq.md)
+* [Jsonnet](jsonnet.md)
 * [Perl tools](perl.md) (one liners and scripts)
 * [Dialog](dialog.md)
 
