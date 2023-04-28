@@ -895,6 +895,15 @@ done
 
 First, you should always activate the use of extended regular expressions (using the option `-E`).
 
+Then, if you want to use the characters `\t`, `\r`, `\n`..., you must use this syntax:
+
+```bash
+printf "\ta,b,c\n" | sed -E $'s/,/\t/g'
+```
+
+> Please note the use of `$`. On bash `$'string'` causes "ANSI-C expansion" (see [this post](https://stackoverflow.com/questions/2610115/why-is-sed-not-recognizing-t-as-a-tab)).
+
+
 ```bash
 TEXT=$(cat <<'EOS'
 a line1
