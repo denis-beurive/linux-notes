@@ -994,6 +994,52 @@ For example:
 printf "[%s]" "$(echo "  this is a text  " | sed -E 's/^\ +//; s/\ +$//')"  # => [this is a text]
 ```
 
+### And what about Mac OS
+
+Under Mac OS, some metacharacters are not recognised. This is the case for `\s`, for example.
+
+The example below works on Mac OS:
+
+```bash
+input=$(cat <<"EOS"
+# This is a comment
+RemProcess = process243 10.52.144.8:14016 10.52.144.9:14016 # comment
+RemProcess=process206    10.52.144.8:14016    10.52.144.9:14016    #  comment
+RemProcess =process156 10.52.144.8:14016 10.52.144.9:14016 # 
+RemProcess= process134 10.52.144.8:14016 10.52.144.9:14016 # 
+
+ RemProcess = process243 10.52.144.8:14016 10.52.144.9:14016 # 
+  RemProcess=process206    10.52.144.8:14016    10.52.144.9:14016    #  comment
+   RemProcess =process156 10.52.144.8:14016 10.52.144.9:14016 #  comment
+    RemProcess= process134 10.52.144.8:14016 10.52.144.9:14016 # 
+EOS
+)
+
+IP="10\\.52\\.144\\.8"
+NEW_IP="10.10.10.10"
+
+echo "$input" | sed -E "s/^([[:blank:]]*)(RemProcess[[:blank:]]*=[[:blank:]]*process[[:digit:]]+[[:blank:]]+)${IP}(:[[:digit:]]+[[:blank:]]+[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+:[[:digit:]]+[[:blank:]]*#.+)\$/\\2${NEW_IP}\\3/"
+
+
+input=$(cat <<"EOS"
+# This is a comment
+RemProcess = process243 10.52.144.8:14016 10.52.144.9:14016 # F147.33480.002.Castelnau-De-Médoc ICOV BAT CAS
+RemProcess=process206    10.52.144.8:14016    10.52.144.9:14016    # F147.FR.33000.002.PASTEUR ICOV BAT PAS
+RemProcess =process156 10.52.144.8:14016 10.52.144.9:14016 # F147.FR.33120.001.ARCACHON ICOV BAT ARC
+RemProcess= process134 10.52.144.8:14016 10.52.144.9:14016 # F147.FR.33140.013.VILLENAVE D ORNON ICOV BAT VNO
+
+ RemProcess = process243 10.52.144.8:14016 10.52.144.9:14016 # F147.33480.002.Castelnau-De-Médoc ICOV BAT CAS
+  RemProcess=process206    10.52.144.8:14016    10.52.144.9:14016    # F147.FR.33000.002.PASTEUR ICOV BAT PAS
+   RemProcess =process156 10.52.144.8:14016 10.52.144.9:14016 # F147.FR.33120.001.ARCACHON ICOV BAT ARC
+    RemProcess= process134 10.52.144.8:14016 10.52.144.9:14016 # F147.FR.33140.013.VILLENAVE D ORNON ICOV BAT VNO
+EOS
+)
+
+IP="10\\.52\\.144\\.9"
+NEW_IP="10.10.10.10"
+echo "$input" | sed -E "s/^([[:blank:]]*)(RemProcess[[:blank:]]*=[[:blank:]]*process[[:digit:]]+[[:blank:]]+[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+:[[:digit:]]+[[:blank:]]+)${IP}(:[[:digit:]]+[[:blank:]]*#.+)$/\\2${NEW_IP}\\3/"
+```
+
 ## Immediately exit if any command has a non-zero exit status
 
 Exit immediately if a pipeline, which may consist of a single simple command, a list, or a compound command returns a non-zero status. 
