@@ -1040,6 +1040,8 @@ NEW_IP="10.10.10.10"
 echo "$input" | sed -E "s/^([[:blank:]]*)(RemProcess[[:blank:]]*=[[:blank:]]*process[[:digit:]]+[[:blank:]]+[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+\\.[[:digit:]]+:[[:digit:]]+[[:blank:]]+)${IP}(:[[:digit:]]+[[:blank:]]*#.+)$/\\2${NEW_IP}\\3/"
 ```
 
+> Good link: [sed matching whitespace on macOS](https://www.ojisanseiuchi.com/2020/08/13/sed-matching-whitespace-on-macos/)
+
 ## Immediately exit if any command has a non-zero exit status
 
 Exit immediately if a pipeline, which may consist of a single simple command, a list, or a compound command returns a non-zero status. 
