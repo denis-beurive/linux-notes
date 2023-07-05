@@ -34,6 +34,12 @@ A _window_:
 * `[Crt] [A] [P]`: previous window, relatively to the windows order.
 * `[Crt] [A] [Crt] [A]`: previously visited window.
 
+## Rename the session
+
+```bash
+screen -S <old id> -X sessionname <new id>
+```
+
 ## Scroll / copy from the current window
 
 ### Scroll (enter "copy mode")

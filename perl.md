@@ -2,6 +2,22 @@
 
 ## Tips
 
+### Set the PATH environment
+
+Set paths to modules relatively to the path of the current file.
+
+```perl
+BEGIN {
+    use File::Spec;
+    sub __EXEC_DIR__ () {
+        my $level = shift || 0;
+        my $file = (caller $level)[1];
+        File::Spec->rel2abs(join '', (File::Spec->splitpath($file))[0, 1])
+    }
+    use lib File::Spec->catfile(&__EXEC_DIR__(), '..', 'local');
+}
+```
+
 ### Declare several variables at once
 
 ```perl
@@ -209,3 +225,15 @@ The scripts produces the file `b64-decoded-file`. From this file, you can get th
 ```bash
 openssl pkcs7 -in b64-decoded-file -inform DER -print_certs -outform PEM -out certificate.pem
 ```
+
+### Execute a module: module as a script
+
+```bash
+sub main {
+    # the code to execute
+}
+
+main() if not caller();
+```
+
+> See this article: [Scripts as Modules](https://www.drdobbs.com/scripts-as-modules/184416165).
