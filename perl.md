@@ -237,3 +237,117 @@ main() if not caller();
 ```
 
 > See this article: [Scripts as Modules](https://www.drdobbs.com/scripts-as-modules/184416165).
+
+### Using threads
+
+This script scans for (job) files ("`job.*.cmd`") within a configured directory (`&JOB_DIR`).
+
+> The content of a job file must contain a command line used to execute a program.
+
+When a job file is found, its content (a command line) is sent to a queue (called the "job queue"). Then the job file is removed.
+
+Simultaneously, jobs are popped out from the (jobs) queue and executed.
+
+The script can be used to convert a parallel execution into a sequential one.
+
+Example: 
+
+```bash
+# file "my-job.sh".
+readonly JOB_FILE="/tmp/jobs/job.${$}.cmd"
+echo "/path/to/job-program" "${@}" > "${JOB_FILE}"
+```
+
+
+```perl
+#!/usr/bin/perl
+#
+# Test if Perl supports threads:
+# perl -e 'use Config; $Config{useithreads} or die("Recompile Perl with threads to run this program.");'
+
+use strict;
+use warnings FATAL => 'all';
+use threads;
+use Thread::Queue;
+use File::Spec;
+
+use constant JOB_DIR => '/tmp/jobs';
+use constant JOB_LOG => '/var/log/jobs.log';
+use constant POLL_PERIOD => 1;
+use constant TRUE => 1==1;
+use constant FALSE => 1!=1;
+
+my $JobQueue = Thread::Queue->new();
+
+sub exit_error {
+    my ($in_message) = @_;
+    printf("FATAL: %s\n", $in_message);
+    exit(1);
+}
+
+$| = 1; # configure the output un auto flush.
+my $t1 = threads->new(\&job_add);
+my $t2 = threads->new(\&job_exec);
+$t1->join();
+$t2->join();
+
+exit(0);
+
+sub job_add {
+    my $dir;
+
+    printf("Start. Job dir is: %s\n", &JOB_DIR);
+    while(&TRUE) {
+        exit_error(sprintf('cannot open directory "%s": %s', &JOB_DIR, $!)) unless (opendir($dir, &JOB_DIR));
+        while (readdir $dir) {
+            last if ('stop' eq $dir);
+            next unless ($_ =~ m/^job\..+\.cmd$/);
+
+            my $path = File::Spec->catfile(&JOB_DIR, $_);
+            my $cmd = slurp($path);
+            chomp($cmd);
+            printf("Add: %s\n", $cmd);
+            exit_error(sprintf('error while reading file "%s"', $path)) unless (defined($cmd));
+            $JobQueue->enqueue($cmd);
+            exit_error(sprintf('cannot remove file "%s": %s', $path, $!)) if (1 != unlink $path);
+        }
+        closedir($dir);
+        sleep &POLL_PERIOD;
+    }
+
+    printf("Stop\n");
+}
+
+sub job_exec {
+    while (&TRUE) {
+        my $job = $JobQueue->dequeue();
+        my @cli = ('/bin/sh', '-c', sprintf('%s >> %s 2>&1', $job, &JOB_LOG));
+        printf("Execute: %s\n", join(' ', @cli));
+        system(@cli);
+        if (0 != $?) {
+            if ($? == -1) {
+                printf("ERROR: could not execute the shell script: %s\n", $!);
+            }
+            elsif ($? & 127) {
+                printf("ERROR: child died with signal %d, %s coredump.\n", ($? & 127), ($? & 128) ? 'with' : 'without');
+            }
+            else {
+                printf("ERROR: child exited with value %d\n", $? >> 8);
+            }
+        }
+        else {
+            print("SUCCESS\n");
+        }
+    }
+    printf("Stop\n");
+}
+
+sub slurp {
+    my ($path) = @_;
+    my ($fd, @lines);
+    open($fd, '<', $path) or return(undef);
+    @lines = <$fd>;
+    close($fd);
+    return(join('', @lines));
+}
+```
