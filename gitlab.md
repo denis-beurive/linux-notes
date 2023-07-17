@@ -13,6 +13,35 @@ curl -sS --insecure --header "Authorization: Bearer ${OAUTH_TOKEN}" "${BASE_URL}
 curl -sS --insecure --header "Authorization: Bearer ${OAUTH_TOKEN}" "${BASE_URL}/api/v4/groups" | jq ".[] | [.name, .id] | @csv"
 ```
 
+## Get all users
+
+```bash
+#!/usr/bin/env bash
+# Configure:
+#   * BASE_URL: the Gitlab API base URL
+#   * OAUTH_TOKEN: your Gitlan authentication tocken
+#   * HEADER_FILE: path to a temporary file
+#   * USERS_PER_PAGE: number of users retrieved from one GET request to the Gitlab API
+
+readonly BASE_URL=https://gitlab.company.com
+readonly OAUTH_TOKEN=xxx
+readonly HEADER_FILE=/tmp/curl-header.txt
+readonly USERS_PER_PAGE=5
+
+declare page=1
+while true
+do
+  rm -f "${HEADER_FILE}"
+  curl -sS -D "${HEADER_FILE}" --insecure --header "Authorization: Bearer ${OAUTH_TOKEN}" "${BASE_URL}/api/v4/users?per_page=${USERS_PER_PAGE}&page=${page}" | jq ' .[]'
+  page="$(cat "${HEADER_FILE}" | tr -d '\r' | grep -E '^X-Next-Page: ' | sed -E 's/^X-Next-Page: (.*)/\1/')"
+  if [ -z "${page}" ]; then
+    break
+  fi
+done
+
+rm -f "${HEADER_FILE}"
+```
+
 ## Clone all projects owned by a given group
 
 ```bash
