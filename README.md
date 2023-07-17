@@ -26,6 +26,7 @@
 # Services
 
 * [Dynamic DNS](ddns.md)
+* [gitlab](gitlab.md)
 
 # Good links
 
