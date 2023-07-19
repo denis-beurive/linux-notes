@@ -16,6 +16,7 @@
 * [Jsonnet](jsonnet.md)
 * [Perl tools](perl.md) (one liners and scripts)
 * [Dialog](dialog.md)
+* [Expect](expect.md)
 
 # Debian based (Ubuntu, Linux Mint...)
 
