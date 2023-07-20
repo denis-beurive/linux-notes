@@ -351,3 +351,224 @@ sub slurp {
     return(join('', @lines));
 }
 ```
+
+### Compare files
+
+```perl
+#!/usr/bin/perl
+#
+# Usage:
+#
+# perl diff.pl [--verbose] [--prefix=<prefix>] <left file> <right file>
+#
+# Default prefix: "diff"
+#
+# Generate:
+#
+# * <prefix>-both:       lines found in both files
+# * <prefix>-only-left:  lines found in in the left file only
+# * <prefix>-only-right: lines found in in the right file only
+
+use strict;
+use warnings FATAL => 'all';
+use Getopt::Long;
+
+use constant DEFAULT_PREFIX => 'diff';
+
+my $file_left = undef;
+my $file_right = undef;
+my $content_left = undef;
+my $content_right = undef;
+my $err = undef;
+my $comparison = undef;
+my $output_file = undef;
+my $cli_verbose = undef;
+my $cli_help = undef;
+my $cli_prefix = &DEFAULT_PREFIX;
+
+# Parse the command line
+
+GetOptions (
+    'verbose'  => \$cli_verbose,
+    'help'     => \$cli_help,
+    'prefix=s' => \$cli_prefix
+) or exit_error("invalid command line arguments\n");
+
+if (defined($cli_help)) {
+    help();
+    exit(0);
+}
+
+if (2 != int(@ARGV)) {
+    exit_error(sprintf("invalid command line. Expect 2 parameters, got %d\n", int(@ARGV)));
+}
+
+$file_left = $ARGV[0];
+$file_right = $ARGV[1];
+
+if (defined($cli_verbose)) {
+    printf("%-25s: %s\n", 'left', $file_left);
+    printf("%-25s: %s\n", 'right', $file_right);
+    printf("%-25s: %s\n", 'prefix', $cli_prefix);
+}
+
+# Load the files
+
+($content_left, $err) = slurp($file_left);
+if (defined($err)) {
+    exit_error(sprintf('cannot load the (left) file "%s": %s', $file_left, $err));
+}
+($content_right, $err) = slurp($file_right);
+exit_error(sprintf('cannot load the (right) file "%s": %s', $file_right, $err)) if (defined($err));
+
+# Compare the contents of the files
+
+$comparison = compare($content_left, $content_right);
+
+$output_file = sprintf('%s-both', $cli_prefix);
+printf("%-25s: %s\n", 'both', $output_file) if (defined($cli_verbose));
+$err = dump_data($output_file, $comparison->{both});
+exit_error(sprintf('cannot create the file "%s": %s', $output_file, $err)) if (defined($err));
+
+$output_file = sprintf('%s-only-left', $cli_prefix);
+printf("%-25s: %s\n", 'only left', $output_file) if (defined($cli_verbose));
+$err = dump_data($output_file, $comparison->{left});
+exit_error(sprintf('cannot create the file "%s": %s', $output_file, $err)) if (defined($err));
+
+$output_file = sprintf('%s-only-right', $cli_prefix);
+printf("%-25s: %s\n", 'only right', $output_file) if (defined($cli_verbose));
+$err = dump_data($output_file, $comparison->{right});
+exit_error(sprintf('cannot create the file "%s": %s', $output_file, $err)) if (defined($err));
+
+exit(0);
+
+# Load the file identified by its path.
+# Return the content of the file as an indexed data structure.
+# @param $inPath the path of the file to load.
+# @return the function returns 2 values:
+#         - a reference to a hash that contains the loaded lines.
+#           key: one line of the file.
+#           value: the number of times the key has been encountered.
+#         - an optional error message.
+#         If the first value is `undef`, then it means that an error occurred.
+
+sub slurp {
+    my ($inPath) = @_;
+    my $fd = undef;
+    my %data = ();
+
+    unless (open($fd, '<', $inPath)) { return(undef, $!) }
+    while (my $line = <$fd>) {
+        chomp($line);
+        $data{$line} = 0 unless (exists($data{$line}));
+        $data{$line} += 1;
+    }
+    close($fd);
+    return(\%data, undef)
+}
+
+# Dump the result of a comparison into a file.
+# @param $inPath the path to the output file.
+# @param $inContent the reference to a hash that represents the result to dump.
+# @return upon successful completion, the function returns the value `undef`.
+#         Otherwise, the function returns a string that represents an error message.
+
+sub dump_data {
+    my ($inPath, $inContent) = @_;
+    my $fd = undef;
+    my $m = undef;
+
+    $m = get_max($inContent);
+    unless (open($fd, '>', $inPath)) { return $! }
+    foreach my $key (sort keys %{$inContent}) {
+        printf($fd "%-${m}s %d\n", $key, $inContent->{$key});
+    }
+    close($fd);
+    return undef;
+}
+
+# Calculate the intersection between two sets of data.
+# @param $inContent1 the first set of data. This is a reference to a hash.
+# @param $inContent2 the second set of data. This is a reference to a hash.
+# @return a reference to a hash that represents the intersection.
+
+sub intersection {
+    my ($inContent1, $inContent2) = @_;
+    my %result = ();
+
+    foreach my $key (keys %{$inContent1}) {
+        next unless (exists($inContent2->{$key}));
+        $result{$key} = $inContent1->{$key} + $inContent2->{$key};
+    }
+    return(\%result)
+}
+
+# Calculate the difference between two sets of data.
+# @param $inContent1 the first set of data. This is a reference to a hash.
+# @param $inContent2 the second set of data. This is a reference to a hash.
+# @return a reference to a hash that represents the difference.
+
+sub difference {
+    my ($inContent1, $inContent2) = @_;
+    my %result = (left => {}, right => {});
+
+    foreach my $key (keys %{$inContent1}) {
+        next if (exists($inContent2->{$key}));
+        $result{left}->{$key} = $inContent1->{$key};
+    }
+
+    foreach my $key (keys %{$inContent2}) {
+        next if (exists($inContent1->{$key}));
+        $result{right}->{$key} = $inContent2->{$key};
+    }
+
+    return(\%result)
+}
+
+# Compare two sets of data: calculate the intersection and the difference.
+# @param $inContent1 the first set of data. This is a reference to a hash.
+# @param $inContent2 the second set of data. This is a reference to a hash.
+# @return a reference to a hash that represents the result of the comparison.
+
+sub compare {
+    my ($inContent1, $inContent2) = @_;
+    my $difference = difference($inContent1, $inContent2);
+
+    return {
+        both  => intersection($inContent1, $inContent2),
+        left  => $difference->{left},
+        right => $difference->{right}
+    }
+}
+
+# Key the length of the longest key within a hash.
+# @param $inHash the reference to the hash.
+# @return the length of the longest key.
+
+sub get_max {
+    my ($inHash) = @_;
+    my $maximum = 0;
+
+    foreach my $key (keys %{$inHash}) {
+        $maximum = length($key) if (length($key) > $maximum);
+    }
+    return($maximum);
+}
+
+sub exit_error {
+    my ($in_message) = @_;
+    printf(STDERR "FATAL: %s\n", $in_message);
+    exit(1);
+}
+
+sub help {
+    print("Usage:\n\n");
+    printf("perl diff.pl [--verbose] [--prefix=<prefix>] <left file> <right file>\n\n");
+    printf("Default prefix: \"%s\"\n\n", &DEFAULT_PREFIX);
+    print("Generate:\n\n");
+    print("* <prefix>-both:       lines found in both files\n");
+    print("* <prefix>-only-left:  lines found in in the left file only\n");
+    print("* <prefix>-only-right: lines found in in the right file only\n");
+}
+```
+
