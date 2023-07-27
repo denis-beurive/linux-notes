@@ -80,9 +80,11 @@ Hit `[Crt] [A] [>]`.
 
 * `[Crt] [A] [D]`: detach screen from the terminal. Reactach with `screen -R [<session ID>]`.
 * `[Crt] [A] :quit`: end the current sesssion. This command will terminate all windows.
+* `[Crt] [A] [x]`: lock a screen.
 * `screen -ls`: list the running screen session. This command prints the list of session IDs.
 * `screen -R [<session ID>]`: reactach a (detached) screen to the terminal.
 * `screen -c <config file>`: start a screen using a configuration file.
+* `screen -S <old name> -X sessionname <new name>`: rename a screen session.
 
 To end a given session identified by its ID:
 
