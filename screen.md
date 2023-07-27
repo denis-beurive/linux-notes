@@ -14,25 +14,29 @@ A _window_:
 
 ## Regions management
 
-* `[Crt] [A] [Maj] [S]`: split a region horizontally.
-* `[Crt] [A] [|]`: split a region vertically.
-* `[Crt] [A] [Tab]`: go the the next region.
-* `[Crt] [A] :remove` or `[Crt] [A] [Maj] [X]`: remove the current region.
-* `[Crt] [A] :resize`: resize the current region.
-* `[Crt] [A] :fit` or `[Crt] [A] [Maj] [F]`: if you resize the terminal, then you may need to refresh the "drawing" of the regions.
+> Note that when a _region_ (within a _terminal_) is created, it is "empty" (meaning that it is not associated with a _window_).
+> * In order to create a _window_ within a newly created region: `[Crt] [a] [c]` (_create a new window_).
+> * You can also associate an existing _window_ to the _region_: `[Crt] [a] ["]` ...
+
+* `[Crt] [a] [Maj] [S]`: split a region horizontally. Note: to get a new _window_: `[Crt] [a] [c]`. To display an existing _window_: `[Crt] [a] ["]` ...
+* `[Crt] [a] [|]` or `[Crt] [a] :split`: split a region vertically. Note: to get a new _window_: `[Crt] [a] [c]`. To display an existing _window_: `[Crt] [a] ["]` ...
+* `[Crt] [a] [Tab]`: go the the next region.
+* `[Crt] [a] :remove` or `[Crt] [a] [Maj] [X]`: remove the current region.
+* `[Crt] [a] :resize`: resize the current region.
+* `[Crt] [a] :fit` or `[Crt] [a] [Maj] [F]`: if you resize the terminal, then you may need to refresh the "drawing" of the regions.
 
 ## Windows management
 
-* `[Crt] [A] [C]`: create a new window.
-* `[Crt] [A] ["]`: list all windows.
-* `[Crt] [A] [Maj] [A]`: set the title.
-* `[Crt] [A] [K]`: destroy (kill) the current window.
+* `[Crt] [a] [c]`: create a new window.
+* `[Crt] [a] ["]`: list all windows.
+* `[Crt] [a] [Maj] [A]`: set the title.
+* `[Crt] [a] [k]`: destroy (kill) the current window.
 
 ## Moving around
 
-* `[Crt] [A] [N]`: next window, relatively to the windows order.
-* `[Crt] [A] [P]`: previous window, relatively to the windows order.
-* `[Crt] [A] [Crt] [A]`: previously visited window.
+* `[Crt] [a] [n]`: next window, relatively to the windows order.
+* `[Crt] [a] [p]`: previous window, relatively to the windows order.
+* `[Crt] [a] [Crt] [A]`: previously visited window.
 
 ## Rename the session
 
@@ -42,17 +46,19 @@ screen -S <old id> -X sessionname <new id>
 
 ## Scroll / copy from the current window
 
-### Scroll (enter "copy mode")
+### Scroll
 
-Enable **copy mode**. In this mode you can scroll backward and forward using the arrow keys (or the mouse wheel):
+Enable **scrolling mode**. In this mode you can scroll backward and forward using the arrow keys (or the mouse wheel):
 
-`[Crt] [A] [Esc]` or `[Crt] [A] [[]`
+* `[Crt] [a] [Esc]`: enter "scrolling mode". Once un "scrolling mode":
+   * `[Crt] [u]`: scroll up
+   * `[Crt] [d]`: scroll down
 
-> To exit the **copy mode**, just hit `Esc`.
+> To exit the **scrolling mode**, just hit `Esc`.
 
 ### Copy some text
 
-While the **copy mode**:
+While the **scrolling mode**:
 
 * Start text selection: hit `Space bar`
 * Select text: use the arrow keys to select the text to copy.
@@ -62,25 +68,25 @@ While the **copy mode**:
 
 ## Copy text from a well konwn file
 
-Hit `[Crt] [A] [<]`: this will copy the text from a _well konwn file_ (this file should be `/tmp/screen-exchange`).
+Hit `[Crt] [a] [<]`: this will copy the text from a _well konwn file_ (this file should be `/tmp/screen-exchange`).
 
 ## Paste previously selected text
 
 ### Past into the current window
 
-Hit `[Crt] [A] []]`.
+Hit `[Crt] [a] []]`.
 
 ### Paste into a well konwn file
 
-Hit `[Crt] [A] [>]`.
+Hit `[Crt] [a] [>]`.
 
 > Note that you cannot choose the path to the file (it should be `/tmp/screen-exchange`).
 
 ## Screen management
 
-* `[Crt] [A] [D]`: detach screen from the terminal. Reactach with `screen -R [<session ID>]`.
-* `[Crt] [A] :quit`: end the current sesssion. This command will terminate all windows.
-* `[Crt] [A] [x]`: lock a screen.
+* `[Crt] [a] [d]`: detach screen from the terminal. Reactach with `screen -R [<session ID>]`.
+* `[Crt] [a] :quit`: end the current sesssion. This command will terminate all windows.
+* `[Crt] [a] [x]`: lock a screen.
 * `screen -ls`: list the running screen session. This command prints the list of session IDs.
 * `screen -R [<session ID>]`: reactach a (detached) screen to the terminal.
 * `screen -c <config file>`: start a screen using a configuration file.
