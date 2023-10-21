@@ -18,12 +18,15 @@ A _window_:
 > * In order to create a _window_ within a newly created region: `[Crt] [a] [c]` (_create a new window_).
 > * You can also associate an existing _window_ to the _region_: `[Crt] [a] ["]` ...
 
-* `[Crt] [a] [Maj] [S]`: split a region horizontally. Note: to get a new _window_: `[Crt] [a] [c]`. To display an existing _window_: `[Crt] [a] ["]` ...
-* `[Crt] [a] [|]` or `[Crt] [a] :split`: split a region vertically. Note: to get a new _window_: `[Crt] [a] [c]`. To display an existing _window_: `[Crt] [a] ["]` ...
-* `[Crt] [a] [Tab]`: go the the next region.
-* `[Crt] [a] :remove` or `[Crt] [a] [Maj] [X]`: remove the current region.
-* `[Crt] [a] :resize`: resize the current region.
+* `[Crt] [a] [|]`: split a region vertically. Note: to get a new _window_: `[Crt] [a] [c]`. To display an existing _window_: `[Crt] [a] ["]` ...
+* `[Crt] [a] [Maj] [S]` or `[Crt] [a] :split` ([doc](https://www.gnu.org/software/screen/manual/html_node/Split.html)): split a region horizontally. Note: to get a new _window_: `[Crt] [a] [c]`. To display an existing _window_: `[Crt] [a] ["]` ...
+* `[Crt] [a] [Tab]`: go the the next _region_.
+* `[Crt] [a] :remove` or `[Crt] [a] [Maj] [X]`: remove the current _region_.
+* `[Crt] [a] [Maj] [Q]`: Close all _regions_ but the current one.
+* `[Crt] [a] :resize`: resize the current _region_.
 * `[Crt] [a] :fit` or `[Crt] [a] [Maj] [F]`: if you resize the terminal, then you may need to refresh the "drawing" of the regions.
+
+> [Full documentation](https://www.gnu.org/software/screen/manual/html_node/Regions.html#Regions)
 
 ## Windows management
 
@@ -34,9 +37,10 @@ A _window_:
 
 ## Moving around
 
-* `[Crt] [a] [n]`: next window, relatively to the windows order.
-* `[Crt] [a] [p]`: previous window, relatively to the windows order.
-* `[Crt] [a] [Crt] [A]`: previously visited window.
+* `[Crt] [a] [n]` or `[Crt] [a] :next` ([doc](https://www.gnu.org/software/screen/manual/html_node/Next-and-Previous.html#Next-and-Previous)): next window, relatively to the windows order.
+* `[Crt] [a] [p]` or `[Crt] [a] :prev` ([doc](https://www.gnu.org/software/screen/manual/html_node/Next-and-Previous.html#Next-and-Previous)): previous window, relatively to the windows order.
+* `[Crt] [a] [Crt] [a]` ([doc](https://www.gnu.org/software/screen/manual/html_node/Other-Window.html#Other-Window)): previously visited window.
+* `[Crt] [a] [n]` (n=0,1...) or  `[Crt] [a] [']` ([doc](https://www.gnu.org/software/screen/manual/html_node/Select.html#Select)): select a window identified by its number.
 
 ## Rename the session
 

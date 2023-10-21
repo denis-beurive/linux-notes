@@ -1537,3 +1537,58 @@ function get_one_batch_of_emails {
 
 response=$(get_one_batch_of_emails ${message_status} ${limit} ${offset})
 ```
+
+# Find files
+
+```bash
+#!/bin/bash
+
+files="tablebin.ssv
+tablebin.ssp
+scripts.ssv
+scripts.sms
+tablebin.smc
+libjs64.so
+libjs.so
+libsmclux64.so
+libsmclux.so
+libsmslux64.so
+libsmslux.so
+libssvlux64.so
+libssvlux.so
+unixdef.h
+log4crc.xml
+libsgdlux.so
+libsgdlux64.so
+srt.h
+libsrtlux.so
+libsrtlux64.so
+sts.h
+scriptsi.sts
+scriptsm.sts
+tablesi.sts
+libsts4lux.so
+libsts4lux64.so
+libsts8lux.so
+libsts8lux64.so
+libstsmlux.so
+libstsmlux64.so
+libstsrlux.so
+libstsrlux64.so
+libstsulux.so
+libstsulux64.so
+libstslux.so
+libstslux64.so"
+
+while IFS= read -r file; do
+  printf "Search for \"%s\"\n" "${file}"
+  find /opt/santesocial/fsv/1.40.14 -type f -name "${file}" -print  -exec false {} +
+  if [[ $? == 0 ]]; then 
+    printf "[N] %s is NOT present\n" "${file}"
+  else 
+    printf "[Y] %s is present\n" "${file}"
+  fi
+  echo
+done <<< "${files}"
+```
+
