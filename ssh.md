@@ -54,7 +54,7 @@ ssh -L 8080:<remote server>:80 <jump server>
 
 All connections to port 8080 on the "local server" will be forwarded to port 80 on the "remote server."
 
-![](images/ssh-local-port-forwarding.png)
+![](images/ssh-tunnel-local-port-forwarding.png)
 
 
 ### Remote port forwarding
@@ -67,5 +67,5 @@ ssh -R 8080:<remote server>:80 <jump server>
 
 All connections to port 8080 on the "remote server" will be forwarded to port 80 on the "local server."
 
-![](images/ssh-remote-port-forwarding.png)
+![](images/ssh-tunnel-remote-port-forwarding.png)
 
