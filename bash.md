@@ -204,6 +204,43 @@ Result:
     V2=20
     V3="${V3}"
 
+## Multiline strings
+
+**With interpolation**:
+
+```bash
+readonly value="a"
+
+echo -n "line1
+line2 \"${value}\"
+line3
+"
+```
+
+**Without interpolation**:
+
+```
+echo 'line1
+line2 ${value}
+line3
+'
+```
+
+If you need to insert single quotes:
+
+```
+echo 'line1
+line2 '"'between single quotes'"'
+line3
+'
+```
+
+> The trick is that we use string concatenation:
+> 
+> `echo '<a'"'"'b'"'"'c>'` => `<a'b'c>`
+>
+> `echo '<a' "'" 'b' "'" 'c>'` => `<a ' b ' c>`
+
 ## Use xargs
 
 Please note the difference between the first and the second example. In the second example, we use a shell to interpret the command.

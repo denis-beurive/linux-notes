@@ -50,12 +50,18 @@ Local port forwarding is mostly used to connect to a remote service on an intern
 ssh -L 8080:<remote server>:80 <jump server>
 ```
 
-> _By convention_, the SSH command is executed on the "local server."
+> The SSH command is executed on the "local server."
 
 All connections to port 8080 on the "local server" will be forwarded to port 80 on the "remote server."
 
-![](images/ssh-tunnel-local-port-forwarding.png)
+> Please note that this command opens an interactive shell (where you can execute commands on the remote server).
+> If you don't want an interactive shell to be open, you can use the option `-N`.
+> 
+> `-N`: _Do not execute a remote command. This is useful for just forwarding ports._
+>
+> Another interesting option is `-f`: _Requests ssh to go to background just before command execution._
 
+![](images/ssh-tunnel-local-port-forwarding.png)
 
 ### Remote port forwarding
 
@@ -64,6 +70,8 @@ Remote port forwarding is mostly used to give access to an internal service to s
 ```
 ssh -R 8080:<remote server>:80 <jump server>
 ```
+
+> The SSH command is executed on the "local server."
 
 All connections to port 8080 on the "remote server" will be forwarded to port 80 on the "local server."
 
