@@ -59,6 +59,18 @@ printf '[This is a test\r]' | trim_ctrl_m_linux   # => [This is a test]
 printf '[This is a test\r]' | trim_ctrl_m_mac     # => [This is a test]
 ```
 
+## Use /dev/fd to create temporary files
+
+```bash
+(cat /dev/fd/3 3<<< "a b a d")
+```
+
+```bash
+(wc -w /dev/fd/4 4<<< "a b a d" | awk '{print $1}')
+```
+
+> Keep in mind that file descriptors are not global. Each process has its own set of descriptors.
+
 ## Find out if you are in a subshell
 
 ```bash
