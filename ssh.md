@@ -2,11 +2,15 @@
 
 ## Tell the SSH client not to try all private keys
 
+Use this option: `-o IdentitiesOnly=yes`.
+
 ```bash
 ssh -o IdentitiesOnly=yes user@host
 ````
 
 ## Tell the SSH client to use only one identity file
+
+Use this option: `-o IdentityFile=identity.key`.
 
 ```bash
 ssh -o IdentitiesOnly=yes \
@@ -15,6 +19,28 @@ ssh -o IdentitiesOnly=yes \
 ```
 
 > The identity file is the private key to use.
+
+## Tell the SSH client not to check host key
+
+Sometimes, SSH tells you:
+
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    @    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+    @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+    Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+    ...
+
+Sometimes you don't care about this event. This is the cas, for example, if you are in a testing environment.
+
+To get rid of this message, use this option: `-oStrictHostKeyChecking=no`.
+
+```bash
+ssh -oStrictHostKeyChecking=no \
+    -o IdentitiesOnly=yes \
+    -o IdentityFile=identity.key \
+    user@host
+```
 
 ## authorized_keys or authorized_keys2 ?
 
