@@ -279,7 +279,6 @@ $ echo a b c | xargs -I %% sh -c 'printf "<%s> <%s> <%s>\n" %%'
 <a> <b> <c>
 ```
 
-
 ## Local variable
 
 ### Mutable
@@ -534,6 +533,55 @@ function yes_no_form {
 response="" # this line is not mandatory, but is is cleaner.
 yes_no_form "What is your decision? ([Y]es or [N]o)" "Invalid response" "response"
 printf "Your decision is \"%s\"\n" "${response}"
+```
+
+## Useful functions
+
+```bash
+error() {
+ 	printf "\n\033[1;31m[ERROR]\e[0m %s\n\n" "$1"
+ 	exit 1
+}
+
+success() {
+ 	printf "\n\033[1;32m[SUCCESS]\e[0m %s\n\n" "$1"
+}
+
+info() {
+ 	printf "\033[1;36m[INFO]\e[0m %s\n" "$1"
+}
+
+title() {
+ 	local texte="$1"
+ 	local marge=4
+ 	local largeur=$(( ${#texte} + marge * 2 ))
+ 	local ligne_border
+
+	printf "\n\033[1;33m"
+ 	ligne_border=$(printf '#%.0s' $(seq 1 $((largeur + 2))))  # Bordure du haut et du bas
+  	echo "$ligne_border"
+ 	printf "#%*s%*s#\n" $((marge + ${#texte})) "$texte" $marge ""
+ 	echo "$ligne_border"
+	printf "\e[0m\n"
+}
+```
+
+## One line test
+
+```bash
+[ "$(lsusb -tv | grep "ID 0424:1104 " | wc -l)" -ge 2 ] && echo "SenSyl detected" || echo "No SenSyl detected"
+```
+
+> This is useful, for example, if you write an installation document.
+
+## Create a temporary file, cleanly
+
+The file will be automatically removed at the end of the script's execution.
+
+```bash
+TMP_FILE=$(mktemp) || { printf "Error: Cannot create a temporary file\n" >&2; exit 1; }
+declare -r TMP_FILE
+trap 'rm -f "${TMP_FILE}"' EXIT
 ```
 
 ## Using arrays
