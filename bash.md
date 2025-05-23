@@ -584,6 +584,16 @@ declare -r TMP_FILE
 trap 'rm -f "${TMP_FILE}"' EXIT
 ```
 
+## Regex with BASH
+
+```bash
+if [[ "$var" =~ ^[a-z]+@[a-z]+\.[a-z]{2,}$ ]]; then
+  echo "Email valide"
+fi
+```
+
+> Warning: BASH does not implements Perl's regex! BASH implements [extended POSIX regex](https://en.wikibooks.org/wiki/Regular_Expressions/POSIX-Extended_Regular_Expressions).
+
 ## Using arrays
 
 ```bash
